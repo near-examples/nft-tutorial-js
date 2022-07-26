@@ -1,23 +1,23 @@
 import { near } from "near-sdk-js";
 import { NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assert, internalAddTokenToOwner, refundDeposit } from "./internals";
+import { assert, internal_add_token_to_owner, refundDeposit } from "./internals";
 import { Token } from "./metadata";
 
-export function mint(
+export function internal_mint(
     contract, 
     tokenId, 
     metadata, 
     receiverId, 
     perpetualRoyalties
 ) {
-    //measure the initial storage being used on the contract
-    let initialStorageUsage = near.storageUsage();
+    //measure the initial storage being used on the contract TODO
+    //let initialStorageUsage = near.storageUsage();
 
     // create a royalty map to store in the token
     let royalty = {}
 
-    // if perpetual royalties were passed into the function: 
-    if (!isUndefined(perpetualRoyalties)) {
+    // if perpetual royalties were passed into the function: TODO: add isUndefined fn
+    if (perpetualRoyalties != null) {
         //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
         assert(perpetualRoyalties.length < 7, "Cannot add more than 6 perpetual royalty amounts");
         
@@ -28,26 +28,27 @@ export function mint(
     }
 
     //specify the token struct that contains the owner ID 
-    let token = new Token (
+    let token = new Token ({
         //set the owner ID equal to the receiver ID passed into the function
-        receiverId,
+        ownerId: receiverId,
         //we set the approved account IDs to the default value (an empty map)
-        {},
+        approvedAccountIds: {},
         //the next approval ID is set to 0
-        0,
+        nextApprovalId: 0,
         //the map of perpetual royalties for the token (The owner will get 100% - total perpetual royalties)
         royalty,
-    );
+    });
 
+    
     //insert the token ID and token struct and make sure that the token doesn't exist
-    assert(!(tokenId in contract.tokensById), "Token already exists");
-    contract.tokensById[tokenId] = token;
+    assert(!contract.tokensById.containsKey(tokenId), "Token already exists");
+    contract.tokensById.set(tokenId, token)
     
     //insert the token ID and metadata
-    contract.tokenMetadataById[tokenId] = metadata;
+    contract.tokenMetadataById.set(tokenId, metadata);
 
     //call the internal method for adding the token to the owner
-    internalAddTokenToOwner(contract, token.owner_id, tokenId)
+    internal_add_token_to_owner(contract, token.owner_id, tokenId)
     
     // Construct the mint log as per the events standard.
     let nftMintLog = {
@@ -68,11 +69,11 @@ export function mint(
     }
     
     // Log the json.
-    near.log(`EVENT_JSON:${nftMintLog}`);
+    near.log(`EVENT_JSON:${JSON.stringify(nftMintLog)}`);
 
-    //calculate the required storage which was the used - initial
-    let requiredStorageInBytes = near.storageUsage() - initialStorageUsage;
+    //calculate the required storage which was the used - initial TODO
+    let requiredStorageInBytes = 1000;//near.storageUsage() - initialStorageUsage;
 
     //refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
-    refundDeposit(required_storage_in_bytes);
+    refundDeposit(requiredStorageInBytes);
 }
