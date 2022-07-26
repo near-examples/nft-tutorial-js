@@ -1,0 +1,4 @@
+near dev-deploy build/contract.wasm -f 
+&& source ./neardev/dev-account.env 
+&& near call $CONTRACT_NAME init '{"owner_id": "'$CONTRACT_NAME'"}' --accountId $CONTRACT_NAME
+&& near call $CONTRACT_NAME nft_mint '{"token_id": "token-1", "metadata": {"title": "My Non Fungible Team Token", "description": "The Team Most Certainly Goes :)", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$CONTRACT_NAME'"}' --accountId $CONTRACT_NAME --amount 0.1
