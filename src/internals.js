@@ -9,6 +9,11 @@ export function assert(statement, message) {
     }
 }
 
+//convert the royalty percentage and amount to pay into a payout (U128)
+export function royalty_to_payout(royaltyPercentage, amountToPay) {
+    return BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)
+}
+
 //calculate how many bytes the account ID is taking up
 export function bytes_for_approved_account_id(accountId) {
     // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
