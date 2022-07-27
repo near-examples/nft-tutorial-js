@@ -61,6 +61,11 @@ export function assert_one_yocto() {
     assert(near.attachedDeposit() == 1, "Requires attached deposit of exactly 1 yoctoNEAR");
 }
 
+//Assert that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
+export function assert_at_least_one_yocto() {
+    assert(near.attachedDeposit() >= 1, "Requires attached deposit of at least 1 yoctoNEAR");
+}
+
 //add a token to the set of tokens an owner has
 export function internal_add_token_to_owner(contract, accountId, tokenId) {
     //get the set of tokens for the given account

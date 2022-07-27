@@ -4,6 +4,7 @@ import { Token } from './metadata';
 import { internal_mint } from './mint';
 import { internal_nft_tokens, internal_supply_for_owner, internal_tokens_for_owner, internal_total_supply } from './enumeration';
 import { internal_nft_token, internal_nft_transfer, internal_nft_transfer_call, internal_resolve_transfer } from './nft_core';
+import { internal_nft_approve, internal_nft_is_approved, internal_nft_revoke, internal_nft_revoke_all } from './approvals';
 
 /// This spec can be treated like a version of the standard.
 export const NFT_METADATA_SPEC = "nft-1.0.0";
@@ -84,6 +85,33 @@ class Contract extends NearContract {
     //returns true if the token was successfully transferred to the receiver_id
     nft_resolve_transfer({ authorized_id, owner_id, receiver_id, token_id, approved_account_ids, memo }) {
         return internal_resolve_transfer(this, authorized_id, owner_id, receiver_id, token_id, approved_account_ids, memo);
+    }
+
+    /*
+        APPROVALS
+    */
+    @view
+    //check if the passed in account has access to approve the token ID
+    nft_is_approved({ token_id, approved_account_id, approval_id }) {
+        return internal_nft_is_approved(this, token_id, approved_account_id, approval_id);
+    }
+
+    @call
+    //approve an account ID to transfer a token on your behalf
+    nft_approve({ token_id, account_id, msg }) {
+        return internal_nft_approve(this, token_id, account_id, msg);
+    }
+
+    @call
+    //approve an account ID to transfer a token on your behalf
+    nft_revoke({ token_id, account_id }) {
+        return internal_nft_revoke(this, token_id, account_id);
+    }
+
+    @call
+    //approve an account ID to transfer a token on your behalf
+    nft_revoke_all({ token_id }) {
+        return internal_nft_revoke_all(this, token_id);
     }
 
     /*
