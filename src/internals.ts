@@ -1,27 +1,29 @@
 import { near, UnorderedSet } from "near-sdk-js";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
+import { Token } from "./metadata.ts";
 
 // TODO: don't hard code storage byte cost
 export const storageCostPerByte = BigInt('10000000000000000000');
 
-export function assert(statement, message) {
+export function assert(statement: boolean, message: string) {
     if (!statement) {
         throw Error(`Assertion failed: ${message}`)
     }
 }
 
 //convert the royalty percentage and amount to pay into a payout (U128)
-export function royalty_to_payout(royaltyPercentage, amountToPay) {
+export function royalty_to_payout(royaltyPercentage: number, amountToPay: bigint): bigint {
     return BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)
 }
 
 //calculate how many bytes the account ID is taking up
-export function bytes_for_approved_account_id(accountId) {
+export function bytes_for_approved_account_id(accountId: string): number {
     // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
     return accountId.length + 4 + 8;
 }
 
 //refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
-export function refund_approved_account_ids_iter(accountId, approvedAccountIds) {
+export function refund_approved_account_ids_iter(accountId: string, approvedAccountIds: string[]) {
     //get the storage total by going through and summing all the bytes for each approved account IDs
     let storageReleased = approvedAccountIds.map(e => bytes_for_approved_account_id(e)).reduce((partialSum, a) => partialSum + a, 0);
     let amountToTransfer = BigInt(storageReleased) * storageCostPerByte;
@@ -32,17 +34,17 @@ export function refund_approved_account_ids_iter(accountId, approvedAccountIds) 
 }
 
 //refund a map of approved account IDs and send the funds to the passed in account ID
-export function refund_approved_account_ids(accountId, approvedAccountIds) {
+export function refund_approved_account_ids(accountId: string, approvedAccountIds: { [key: string]: number }) {
     //call the refund_approved_account_ids_iter with the approved account IDs as keys
     refund_approved_account_ids_iter(accountId, Object.keys(approvedAccountIds));
 }
 
 //refund the initial deposit based on the amount of storage that was used up
-export function refundDeposit(storageUsed) {
+export function refundDeposit(storageUsed: number) {
     //get how much it would cost to store the information
     let requiredCost = BigInt(storageUsed) * storageCostPerByte
     //get the attached deposit
-    let attachedDeposit = near.attachedDeposit();
+    let attachedDeposit = near.attachedDeposit().valueOf();
 
     //make sure that the attached deposit is greater than or equal to the required cost
     assert(
@@ -63,16 +65,16 @@ export function refundDeposit(storageUsed) {
 
 //used to make sure the user attached exactly 1 yoctoNEAR
 export function assert_one_yocto() {
-    assert(near.attachedDeposit() == 1, "Requires attached deposit of exactly 1 yoctoNEAR");
+    assert(near.attachedDeposit().toString() === "1", "Requires attached deposit of exactly 1 yoctoNEAR");
 }
 
 //Assert that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
 export function assert_at_least_one_yocto() {
-    assert(near.attachedDeposit() >= 1, "Requires attached deposit of at least 1 yoctoNEAR");
+    assert(near.attachedDeposit().valueOf() >= BigInt(1), "Requires attached deposit of at least 1 yoctoNEAR");
 }
 
 //add a token to the set of tokens an owner has
-export function internal_add_token_to_owner(contract, accountId, tokenId) {
+export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
     let tokenSet = contract.tokensPerOwner.get(accountId);
 
@@ -89,7 +91,7 @@ export function internal_add_token_to_owner(contract, accountId, tokenId) {
 }
 
 //remove a token from an owner (internal method and can't be called directly via CLI).
-export function internal_remove_token_from_owner(contract, accountId, tokenId) {
+export function internal_remove_token_from_owner(contract: Contract, accountId: string, tokenId: string) {
     //we get the set of tokens that the owner has
     let tokenSet = contract.tokensPerOwner.get(accountId);
     //if there is no set of tokens for the owner, we panic with the following message:
@@ -109,7 +111,7 @@ export function internal_remove_token_from_owner(contract, accountId, tokenId) {
 }
 
 //transfers the NFT to the receiver_id (internal method and can't be called directly via CLI).
-export function internal_transfer(contract, senderId, receiverId, tokenId, approvalId, memo) {
+export function internal_transfer(contract: Contract, senderId: string, receiverId: string, tokenId: string, approvalId: number, memo: string): Token {
     //get the token object by passing in the token_id
     let token = contract.tokensById.get(tokenId);
     if (token == null) {
