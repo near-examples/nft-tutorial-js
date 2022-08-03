@@ -1,6 +1,5 @@
-import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, utils, Vector, UnorderedSet } from 'near-sdk-js'
-import { isUndefined } from 'lodash-es'
-import { Token } from './metadata';
+import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet } from 'near-sdk-js'
+import { NFTContractMetadata, Token, TokenMetadata, internal_nft_metadata } from './metadata';
 import { internal_mint } from './mint';
 import { internal_nft_tokens, internal_supply_for_owner, internal_tokens_for_owner, internal_total_supply } from './enumeration';
 import { internal_nft_token, internal_nft_transfer, internal_nft_transfer_call, internal_resolve_transfer } from './nft_core';
@@ -14,7 +13,13 @@ export const NFT_METADATA_SPEC = "nft-1.0.0";
 export const NFT_STANDARD_NAME = "nep171";
 
 @NearBindgen
-class Contract extends NearContract {
+export class Contract extends NearContract {
+    owner_id: string;
+    tokensPerOwner: LookupMap<string, UnorderedSet<string>>;
+    tokensById: LookupMap<string, Token>;
+    tokenMetadataById: UnorderedMap<string, TokenMetadata>;
+    metadata: NFTContractMetadata;
+
     /*
         initialization function (can only be called once).
         this initializes the contract with metadata that was passed in and
@@ -38,18 +43,9 @@ class Contract extends NearContract {
 
     deserialize() {
         super.deserialize()
-        this.tokenMetadataById = Object.assign(new UnorderedMap, this.tokenMetadataById)
-        this.tokenMetadataById.keys = Object.assign(new Vector, this.tokenMetadataById.keys)
-        this.tokenMetadataById.values = Object.assign(new Vector, this.tokenMetadataById.values)
-
-        this.tokensById = Object.assign(new LookupMap, this.tokensById)
-        this.tokensById.keys = Object.assign(new Vector, this.tokensById.keys)
-        this.tokensById.values = Object.assign(new Vector, this.tokensById.values)
-
-
-        this.tokensPerOwner = Object.assign(new LookupMap, this.tokensPerOwner)
-        this.tokensPerOwner.keys = Object.assign(new Vector, this.tokensPerOwner.keys)
-        this.tokensPerOwner.values = Object.assign(new UnorderedSet, this.tokensPerOwner.values)
+        this.tokensPerOwner = new LookupMap("tokensPerOwner");
+        this.tokensById = new LookupMap("tokensPerOwner");
+        this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
     }
 
     /*
@@ -114,8 +110,8 @@ class Contract extends NearContract {
 
     @call
     //transfers the token to the receiver ID and returns the payout object that should be payed given the passed in balance. 
-    nft_transfer_payout({ receiver_id, token_id, approval_id, balance, max_len_payout }) {
-        return internal_nft_transfer_payout(this, receiver_id, token_id, approval_id, balance, max_len_payout);
+    nft_transfer_payout({ receiver_id, token_id, approval_id, memo, balance, max_len_payout }) {
+        return internal_nft_transfer_payout(this, receiver_id, token_id, approval_id, memo, balance, max_len_payout);
     }
 
     @call
@@ -155,5 +151,14 @@ class Contract extends NearContract {
     //Query for all the tokens for an owner
     nft_supply_for_owner({ account_id }) {
         return internal_supply_for_owner(this, account_id);
+    }
+
+    /*
+        METADATA
+    */
+    @view
+    //Query for all the tokens for an owner
+    nft_metadata() {
+        return internal_nft_metadata(this);
     }
 }

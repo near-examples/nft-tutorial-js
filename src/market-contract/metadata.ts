@@ -1,38 +1,92 @@
-import {near, utils} from 'near-sdk-js'
-import { assert } from './internals';
+import { Contract } from ".";
 
 //defines the payout type we'll be returning as a part of the royalty standards.
 export class Payout {
-    constructor({ payout }) {
+    payout: { [accountId: string]: bigint };
+    constructor({ payout }: { payout: { [accountId: string]: bigint } }) {
         this.payout = payout;
     }
 }
 
 export class NFTContractMetadata {
-    constructor({spec, name, symbol, icon, baseUri, reference, referenceHash}) {
+    spec: string;
+    name: string;
+    symbol: string;
+    icon?: string;
+    base_uri?: string;
+    reference?: string;
+    reference_hash?: string;
+    
+    constructor(
+        {
+            spec, 
+            name, 
+            symbol, 
+            icon, 
+            baseUri, 
+            reference, 
+            referenceHash
+        }:{ 
+            spec: string, 
+            name: string, 
+            symbol: string, 
+            icon?: string, 
+            baseUri?: string, 
+            reference?: string, 
+            referenceHash?: string
+        }) {
         this.spec = spec  // required, essentially a version like "nft-1.0.0"
         this.name = name  // required, ex. "Mosaics"
-        this.symbol = symbol // required, ex. "MOSIAC"
+        this.symbol = symbol // required, ex. "MOSAIC"
         this.icon = icon // Data URL
         this.base_uri = baseUri // Centralized gateway known to have reliable access to decentralized storage assets referenced by `reference` or `media` URLs
         this.reference = reference // URL to a JSON file with more info
         this.reference_hash = referenceHash // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
     }
-
-    assert_valid() {
-        assert(self.spec == NFT_METADATA_SPEC, "Spec is not NFT metadata");
-        assert(
-            (self.reference != null) == (self.reference_hash != null),
-            "Reference and reference hash must be present"
-        );
-        if (this.reference_hash != null) {
-            assert(this.reference_hash.length == 32, "Hash has to be 32 bytes");
-        }
-    }
 }
 
 export class TokenMetadata {
-    constructor({title, description, media, mediaHash, copies, issuedAt, expiresAt, startsAt, updatedAt, extra, reference, referenceHash}) {
+    title?: string;
+    description?: string;
+    media?: string;
+    media_hash?: string;
+    copies?: number;
+    issued_at?: string;
+    expires_at?: string;
+    starts_at?: string;
+    updated_at?: string;
+    extra?: string;
+    reference?: string;
+    reference_hash?: string;
+
+    constructor(
+        {
+            title, 
+            description, 
+            media, 
+            mediaHash, 
+            copies, 
+            issuedAt, 
+            expiresAt, 
+            startsAt, 
+            updatedAt, 
+            extra, 
+            reference, 
+            referenceHash
+        }:{
+            title?: string, 
+            description?: string, 
+            media?: string, 
+            mediaHash?: string, 
+            copies?: number, 
+            issuedAt?: string, 
+            expiresAt?: string, 
+            startsAt?: string, 
+            updatedAt?: string, 
+            extra?: string, 
+            reference?: string, 
+            referenceHash?: string}
+        ) {
         this.title = title // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
         this.description = description // free-form description
         this.media = media // URL to associated media, preferably to decentralized, content-addressed storage
@@ -46,22 +100,25 @@ export class TokenMetadata {
         this.reference = reference // URL to an off-chain JSON file with more info.
         this.reference_hash = referenceHash // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
     }
-
-    assert_valid() {        
-        assert((this.media != null) == (this.media_hash != null));
-        if (this.media_hash != null) {
-            assert(this.media_hash.length == 32, "Media hash has to be 32 bytes");
-        }
-
-        assert((this.reference != null) == (this.reference_hash != null));
-        if (this.reference_hash != null) {
-            assert(this.reference_hash.length == 32, "Reference hash has to be 32 bytes");
-        }
-    }
 }
 
 export class Token {
-    constructor({ ownerId, approvedAccountIds, nextApprovalId, royalty }) {
+    owner_id: string;
+    approved_account_ids: { [accountId: string]: number };
+    next_approval_id: number;
+    royalty: { [accountId: string]: number };
+
+    constructor({ 
+        ownerId, 
+        approvedAccountIds, 
+        nextApprovalId, 
+        royalty 
+    }:{ 
+        ownerId: string, 
+        approvedAccountIds: { [accountId: string]: number }, 
+        nextApprovalId: number, 
+        royalty: { [accountId: string]: number } 
+    }) {
         //owner of the token
         this.owner_id = ownerId,
         //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
@@ -75,7 +132,25 @@ export class Token {
 
 //The Json token is what will be returned from view calls. 
 export class JsonToken {
-    constructor({ tokenId, ownerId, metadata, approvedAccountIds, royalty }) {
+    token_id: string;
+    owner_id: string;
+    metadata: TokenMetadata;
+    approved_account_ids: { [accountId: string]: number };
+    royalty: { [accountId: string]: number };
+
+    constructor({ 
+        tokenId, 
+        ownerId, 
+        metadata, 
+        approvedAccountIds, 
+        royalty 
+    }:{
+        tokenId: string,
+        ownerId: string,
+        metadata: TokenMetadata,
+        approvedAccountIds: { [accountId: string]: number },
+        royalty: { [accountId: string]: number }
+    }) {
         //token ID
         this.token_id = tokenId,
         //owner of the token
@@ -87,4 +162,9 @@ export class JsonToken {
         //keep track of the royalty percentages for the token in a hash map
         this.royalty = royalty
     }
+}
+
+//get the information for a specific token ID
+export function internal_nft_metadata(contract: Contract): NFTContractMetadata {
+    return contract.metadata;
 }

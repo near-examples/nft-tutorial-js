@@ -1,20 +1,20 @@
 import { near } from "near-sdk-js";
-import { NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assert, internal_add_token_to_owner, refundDeposit } from "./internals";
-import { Token } from "./metadata";
+import { Token, TokenMetadata } from "./metadata";
 
 export function internal_mint(
-    contract, 
-    tokenId, 
-    metadata, 
-    receiverId, 
-    perpetualRoyalties
+    contract: Contract, 
+    tokenId: string, 
+    metadata: TokenMetadata, 
+    receiverId: string, 
+    perpetualRoyalties: { [accountId: string]: number }
 ) {
     //measure the initial storage being used on the contract TODO
     //let initialStorageUsage = near.storageUsage();
 
     // create a royalty map to store in the token
-    let royalty = {}
+    let royalty: { [accountId: string]: number } = {}
 
     // if perpetual royalties were passed into the function: TODO: add isUndefined fn
     if (perpetualRoyalties != null) {
@@ -22,9 +22,9 @@ export function internal_mint(
         assert(perpetualRoyalties.length < 7, "Cannot add more than 6 perpetual royalty amounts");
         
         //iterate through the perpetual royalties and insert the account and amount in the royalty map
-        for (const [account, amount] in Object.entries(perpetualRoyalties)) {
+        Object.entries(perpetualRoyalties).forEach(([account, amount], index) => {
             royalty[account] = amount;
-        }
+        });
     }
 
     //specify the token struct that contains the owner ID 

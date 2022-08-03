@@ -1,10 +1,16 @@
-import { near } from "near-sdk-js";
-import { NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assert, assert_at_least_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids_iter } from "./internals";
-import { Token } from "./metadata";
+import { bytes, near } from "near-sdk-js";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals";
+
+const GAS_FOR_NFT_ON_APPROVE = 10_000_000_000_000;
 
 //approve an account ID to transfer a token on your behalf
-export function internal_nft_approve(contract, tokenId, accountId, msg) {
+export function internal_nft_approve(
+    contract: Contract, 
+    tokenId: string, 
+    accountId: string, 
+    msg: string
+) {
     /*
         assert at least one yocto for security reasons - this will cause a redirect to the NEAR wallet.
         The user needs to attach enough to pay for storage on the contract
@@ -23,7 +29,7 @@ export function internal_nft_approve(contract, tokenId, accountId, msg) {
     let approvalId = token.next_approval_id;
 
     //check if the account has been approved already for this token
-    let isNewApproval = token.approved_account_ids.hasOwnedProperty(accountId);
+    let isNewApproval = token.approved_account_ids.hasOwnProperty(accountId);
     token.approved_account_ids[accountId] = approvalId;
 
     //if it was a new approval, we need to calculate how much storage is being used to add the account.
@@ -41,7 +47,7 @@ export function internal_nft_approve(contract, tokenId, accountId, msg) {
     //account we're giving access to. 
     if (msg != null) {
         // Initiating receiver's call and the callback
-        const promise = near.promiseBatchCreate(receiverId);
+        const promise = near.promiseBatchCreate(accountId);
         near.promiseBatchActionFunctionCall(
             promise, 
             "nft_on_approve", 
@@ -51,7 +57,7 @@ export function internal_nft_approve(contract, tokenId, accountId, msg) {
                 approval_id: approvalId,
                 msg
             })), 
-            NO_DEPOSIT, 
+            0, // no deposit 
             GAS_FOR_NFT_ON_APPROVE
         );
 
@@ -60,7 +66,12 @@ export function internal_nft_approve(contract, tokenId, accountId, msg) {
 }
 
 //check if the passed in account has access to approve the token ID
-export function internal_nft_is_approved(contract, tokenId, approvedAccountId, approvalId) {
+export function internal_nft_is_approved(
+    contract: Contract, 
+    tokenId: string, 
+    approvedAccountId: string, 
+    approvalId: number
+) {
     //get the token object from the token_id
     let token = contract.tokensById.get(tokenId);
     if (token == null) {
@@ -87,7 +98,11 @@ export function internal_nft_is_approved(contract, tokenId, approvedAccountId, a
 }
 
 //revoke a specific account from transferring the token on your behalf
-export function internal_nft_revoke(contract, tokenId, accountId) {
+export function internal_nft_revoke(
+    contract: Contract, 
+    tokenId: string, 
+    accountId: string
+) {
     //assert that the user attached exactly 1 yoctoNEAR for security reasons
     assert_one_yocto();
 
@@ -99,10 +114,10 @@ export function internal_nft_revoke(contract, tokenId, accountId) {
 
     //get the caller of the function and assert that they are the owner of the token
     let predecessorAccountId = near.predecessorAccountId();
-    assert(predecessorAccountId, token.owner_id, "only token owner can revoke");
+    assert(predecessorAccountId == token.owner_id, "only token owner can revoke");
      
     //if the account ID was in the token's approval, we remove it
-    if (token.approved_account_ids.hasOwnedProperty(accountId)) {
+    if (token.approved_account_ids.hasOwnProperty(accountId)) {
         delete token.approved_account_ids[accountId];
         
         //refund the funds released by removing the approved_account_id to the caller of the function
@@ -114,7 +129,10 @@ export function internal_nft_revoke(contract, tokenId, accountId) {
 }
 
 //revoke all accounts from transferring the token on your behalf
-export function internal_nft_revoke_all(contract, tokenId) {
+export function internal_nft_revoke_all(
+    contract: Contract, 
+    tokenId: string
+) {
     //assert that the caller attached exactly 1 yoctoNEAR for security
     assert_one_yocto();
 
@@ -126,7 +144,7 @@ export function internal_nft_revoke_all(contract, tokenId) {
 
     //get the caller and make sure they are the owner of the tokens
     let predecessorAccountId = near.predecessorAccountId();
-    assert(predecessorAccountId, token.owner_id, "only token owner can revoke");
+    assert(predecessorAccountId == token.owner_id, "only token owner can revoke");
 
     //only revoke if the approved account IDs for the token is not empty
     if (token.approved_account_ids && Object.keys(token.approved_account_ids).length === 0 && Object.getPrototypeOf(token.approved_account_ids) === Object.prototype) {
