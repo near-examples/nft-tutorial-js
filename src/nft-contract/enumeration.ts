@@ -18,10 +18,12 @@ export function internal_nft_tokens(
 ) {
     let tokens = [];
     let keys = contract.tokenMetadataById.toArray();
+    near.log('keys: ', keys)
     // Paginate through the keys using the fromIndex and limit
     for (let i = fromIndex; i < keys.length && i < fromIndex + limit; i++) {
         // get the token object from the keys
         let jsonToken = internal_nft_token(contract, keys[i][0]);
+        near.log('jsonToken: ', jsonToken)
         tokens.push(jsonToken);
     }
     return tokens;
@@ -31,6 +33,7 @@ export function internal_nft_tokens(
 export function internal_supply_for_owner(contract, accountId) {
     //get the set of tokens for the passed in owner
     let tokens = contract.tokensPerOwner.get(accountId);
+    near.log('tokens: ', tokens)
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokens == null) {
         return 0

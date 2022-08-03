@@ -77,14 +77,17 @@ export function assert_at_least_one_yocto() {
 export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
     let tokenSet = contract.tokensPerOwner.get(accountId);
+    near.log('tokenSet: ', tokenSet)
 
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set
         tokenSet = new UnorderedSet(accountId);
+        near.log('tokenSet after default: ', tokenSet.toArray())
     }
 
     //we insert the token ID into the set
     tokenSet.set(tokenId);
+    near.log('tokenSet after set: ', tokenSet.toArray())
 
     //we insert that set for the given account ID. 
     contract.tokensPerOwner.set(accountId, tokenSet);
