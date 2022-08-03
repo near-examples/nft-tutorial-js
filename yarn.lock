@@ -851,10 +851,10 @@ ms@2.1.2:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-near-sdk-js@^0.4.0-3:
-  version "0.4.0-3"
-  resolved "https://registry.yarnpkg.com/near-sdk-js/-/near-sdk-js-0.4.0-3.tgz#ca6996a3b1ceedd5c126a670add7f8241b20cbd2"
-  integrity sha512-57lmb1trYhJ9171EWec/2GZa/0/7ESbgc5sx3YKS9SPY/5I9+h1BCwBNvKjdH6wMrhSvMfK3/x7Ly/p9SAfpxA==
+near-sdk-js@^0.4.0-4:
+  version "0.4.0-4"
+  resolved "https://registry.yarnpkg.com/near-sdk-js/-/near-sdk-js-0.4.0-4.tgz#8c30f3f2f6a0b82a210d04d86f6ccc3f939ee63d"
+  integrity sha512-p08dr7mTRJIhiV5VXQ0PkkqTqPOg1OPqqHwKheBZK/vGz24h7c/6Dn2aPC5kb7bzlOmZ4DJz9FsWqtAKFe19ng==
   dependencies:
     "@babel/core" "^7.17.5"
     "@babel/plugin-proposal-decorators" "^7.17.2"

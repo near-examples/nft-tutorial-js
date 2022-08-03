@@ -1,7 +1,7 @@
 import { near } from "near-sdk-js";
-import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
-import { assert, internal_add_token_to_owner, refundDeposit } from "./internals.ts";
-import { Token, TokenMetadata } from "./metadata.ts";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { assert, internal_add_token_to_owner, refundDeposit } from "./internals";
+import { Token, TokenMetadata } from "./metadata";
 
 export function internal_mint(
     contract: Contract, 

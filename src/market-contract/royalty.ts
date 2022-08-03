@@ -1,6 +1,6 @@
 import { near } from "near-sdk-js";
-import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
-import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, internal_transfer, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter, royalty_to_payout } from "./internals.ts";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, internal_transfer, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter, royalty_to_payout } from "./internals";
 
 //calculates the payout for a token given the passed in balance. This is a view method
 export function internal_nft_payout(

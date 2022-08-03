@@ -1,6 +1,6 @@
 import { bytes, near } from "near-sdk-js";
-import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
-import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals.ts";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals";
 
 const GAS_FOR_NFT_ON_APPROVE = 10_000_000_000_000;
 

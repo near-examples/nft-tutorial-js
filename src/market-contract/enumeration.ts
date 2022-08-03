@@ -1,6 +1,6 @@
 import { near } from "near-sdk-js";
-import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
-import { internal_nft_token } from "./nft_core.ts";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { internal_nft_token } from "./nft_core";
 
 //Query for the total supply of NFTs on the contract
 export function internal_total_supply(

@@ -1,10 +1,10 @@
 import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet } from 'near-sdk-js'
-import { NFTContractMetadata, Token, TokenMetadata, internal_nft_metadata } from './metadata.ts';
-import { internal_mint } from './mint.ts';
-import { internal_nft_tokens, internal_supply_for_owner, internal_tokens_for_owner, internal_total_supply } from './enumeration.ts';
-import { internal_nft_token, internal_nft_transfer, internal_nft_transfer_call, internal_resolve_transfer } from './nft_core.ts';
-import { internal_nft_approve, internal_nft_is_approved, internal_nft_revoke, internal_nft_revoke_all } from './approvals.ts';
-import { internal_nft_payout, internal_nft_transfer_payout } from './royalty.ts';
+import { NFTContractMetadata, Token, TokenMetadata, internal_nft_metadata } from './metadata';
+import { internal_mint } from './mint';
+import { internal_nft_tokens, internal_supply_for_owner, internal_tokens_for_owner, internal_total_supply } from './enumeration';
+import { internal_nft_token, internal_nft_transfer, internal_nft_transfer_call, internal_resolve_transfer } from './nft_core';
+import { internal_nft_approve, internal_nft_is_approved, internal_nft_revoke, internal_nft_revoke_all } from './approvals';
+import { internal_nft_payout, internal_nft_transfer_payout } from './royalty';
 
 /// This spec can be treated like a version of the standard.
 export const NFT_METADATA_SPEC = "nft-1.0.0";

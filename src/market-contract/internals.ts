@@ -1,6 +1,6 @@
 import { near, UnorderedSet } from "near-sdk-js";
-import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from "./index.ts";
-import { Token } from "./metadata.ts";
+import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { Token } from "./metadata";
 
 // TODO: don't hard code storage byte cost
 export const storageCostPerByte = BigInt('10000000000000000000');
