@@ -5,6 +5,7 @@ import { internal_nft_tokens, internal_supply_for_owner, internal_tokens_for_own
 import { internal_nft_token, internal_nft_transfer, internal_nft_transfer_call, internal_resolve_transfer } from './nft_core';
 import { internal_nft_approve, internal_nft_is_approved, internal_nft_revoke, internal_nft_revoke_all } from './approvals';
 import { internal_nft_payout, internal_nft_transfer_payout } from './royalty';
+import {Serializer} from 'superserial';
 
 /// This spec can be treated like a version of the standard.
 export const NFT_METADATA_SPEC = "nft-1.0.0";
@@ -35,15 +36,16 @@ export class Contract extends NearContract {
     }) {
         super()
         this.owner_id = owner_id;
-        this.tokensPerOwner = new LookupMap<string, UnorderedSet<string>>("tokensPerOwner", {UnorderedSet});
-        this.tokensById = new LookupMap<string, Token>("tokensPerOwner", {Token});
+        this.tokensPerOwner = new LookupMap<string, UnorderedSet<string>>("tokensPerOwner", {UnorderedSet, Vector, Serializer});
+        this.tokensById = new LookupMap<string, Token>("tokensById", {Token});
         this.tokenMetadataById = new UnorderedMap<string, TokenMetadata>("tokenMetadataById", {TokenMetadata});
         this.metadata = metadata;
     }
 
     deserialize() {
         super.deserialize()
-        this.tokensById = new LookupMap<string, Token>("tokensPerOwner", {Token});
+        this.tokensById = new LookupMap<string, Token>("tokensById", {Token});
+        this.tokensPerOwner = new LookupMap<string, UnorderedSet<string>>("tokensPerOwner", {UnorderedSet, Vector, Serializer});
 
         // this.tokenMetadataById.keys = {prefix:"tokensPerOwner_k", len: 3}
         // we want it to be:
@@ -51,10 +53,16 @@ export class Contract extends NearContract {
         // in js: Object.assign(new Vector, this.tokenMetadataById.keys)
         // this.tokenMetadataById.keys = this.tokenMetadataById.keys as Vector<string>;
         // this.tokenMetadataById.keys = Object.assign(new Vector(this.tokenMetadataById.keys.prefix), this.tokenMetadataById.keys)
-        // this.tokenMetadataById.values = Object.assign(new Vector(this.tokenMetadataById.values.prefix), this.tokenMetadataById.values)
-        (this.tokenMetadataById.keys as any).prototype = Vector;
-        (this.tokenMetadataById.values as any).prototype = Vector;
-        this.tokenMetadataById = Object.assign(new UnorderedMap<string, TokenMetadata>("tokenMetadataById", {TokenMetadata}), this.tokenMetadataById)
+        // (this.tokenMetadataById.values as any).prototype = Vector;
+        // @ts-ignore
+        this.tokenMetadataById.keys = Object.assign(new Vector, this.tokenMetadataById.keys)
+        this.tokenMetadataById.keys.serializer = new Serializer();
+        // @ts-ignore
+        this.tokenMetadataById.values = Object.assign(new Vector, this.tokenMetadataById.value)
+        // @ts-ignore
+        this.tokenMetadataById = Object.assign(new UnorderedMap, this.tokenMetadataById)
+        this.tokenMetadataById.values.serializer = new Serializer({classes: {TokenMetadata}});
+        this.tokenMetadataById.serializer = new Serializer({classes: {TokenMetadata}});        
     }
 
     /*

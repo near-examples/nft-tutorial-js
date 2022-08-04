@@ -1,4 +1,4 @@
-import { near } from "near-sdk-js";
+import { near, UnorderedSet } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { restoreOwners } from "./internals";
 import { internal_nft_token } from "./nft_core";

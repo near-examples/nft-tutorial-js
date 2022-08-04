@@ -13,11 +13,11 @@ export function assert(statement: boolean, message: string) {
 
 // Magic 0.o
 export function restoreOwners(collection) {
-    if (collection == null) {
-        return null;
-    }
-    (collection.elements as any).prototype = Vector;
-    (collection as any).prototype = UnorderedSet;
+    // if (collection == null) {
+    //     return null;
+    // }
+    // (collection.elements as any).prototype = Vector;
+    // (collection as any).prototype = UnorderedSet;
     return collection;
 }
 
