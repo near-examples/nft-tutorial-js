@@ -46,6 +46,7 @@ export function internal_mint(
     
     //insert the token ID and metadata
     contract.tokenMetadataById.set(tokenId, metadata);
+    near.log('contract.tokenMetadataById: ', contract.tokenMetadataById.toArray())
 
     //call the internal method for adding the token to the owner
     internal_add_token_to_owner(contract, token.owner_id, tokenId)

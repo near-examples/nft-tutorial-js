@@ -1,5 +1,6 @@
 import { near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { restoreOwners } from "../nft-contract/internals";
 import { internal_nft_token } from "./nft_core";
 
 //Query for the total supply of NFTs on the contract
@@ -30,7 +31,8 @@ export function internal_nft_tokens(
 //get the total supply of NFTs for a given owner
 export function internal_supply_for_owner(contract, accountId) {
     //get the set of tokens for the passed in owner
-    let tokens = contract.tokensPerOwner.get(accountId);
+    let tokens = restoreOwners(contract.tokensPerOwner.get(accountId));
+
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokens == null) {
         return 0
@@ -43,7 +45,7 @@ export function internal_supply_for_owner(contract, accountId) {
 //Query for all the tokens for an owner
 export function internal_tokens_for_owner(contract, accountId, fromIndex, limit) {
     //get the set of tokens for the passed in owner
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
 
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokenSet == null) {

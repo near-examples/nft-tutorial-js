@@ -25,7 +25,7 @@ export class Contract extends NearContract {
         this initializes the contract with metadata that was passed in and
         the owner_id. 
     */
-    constructor({ 
+    constructor({
         owner_id, 
         metadata = {
             spec: "nft-1.0.0",
@@ -35,17 +35,26 @@ export class Contract extends NearContract {
     }) {
         super()
         this.owner_id = owner_id;
-        this.tokensPerOwner = new LookupMap("tokensPerOwner");
-        this.tokensById = new LookupMap("tokensPerOwner");
-        this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
+        this.tokensPerOwner = new LookupMap<string, UnorderedSet<string>>("tokensPerOwner", {UnorderedSet});
+        this.tokensById = new LookupMap<string, Token>("tokensPerOwner", {Token});
+        this.tokenMetadataById = new UnorderedMap<string, TokenMetadata>("tokenMetadataById", {TokenMetadata});
         this.metadata = metadata;
     }
 
     deserialize() {
         super.deserialize()
-        this.tokensPerOwner = new LookupMap("tokensPerOwner");
-        this.tokensById = new LookupMap("tokensPerOwner");
-        this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
+        this.tokensById = new LookupMap<string, Token>("tokensPerOwner", {Token});
+
+        // this.tokenMetadataById.keys = {prefix:"tokensPerOwner_k", len: 3}
+        // we want it to be:
+        // Vector{prefix:"tokensPerOwner_k", len: 3}
+        // in js: Object.assign(new Vector, this.tokenMetadataById.keys)
+        // this.tokenMetadataById.keys = this.tokenMetadataById.keys as Vector<string>;
+        // this.tokenMetadataById.keys = Object.assign(new Vector(this.tokenMetadataById.keys.prefix), this.tokenMetadataById.keys)
+        // this.tokenMetadataById.values = Object.assign(new Vector(this.tokenMetadataById.values.prefix), this.tokenMetadataById.values)
+        (this.tokenMetadataById.keys as any).prototype = Vector;
+        (this.tokenMetadataById.values as any).prototype = Vector;
+        this.tokenMetadataById = Object.assign(new UnorderedMap<string, TokenMetadata>("tokenMetadataById", {TokenMetadata}), this.tokenMetadataById)
     }
 
     /*

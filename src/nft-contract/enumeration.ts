@@ -1,5 +1,6 @@
 import { near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { restoreOwners } from "./internals";
 import { internal_nft_token } from "./nft_core";
 
 //Query for the total supply of NFTs on the contract
@@ -32,7 +33,7 @@ export function internal_nft_tokens(
 //get the total supply of NFTs for a given owner
 export function internal_supply_for_owner(contract, accountId) {
     //get the set of tokens for the passed in owner
-    let tokens = contract.tokensPerOwner.get(accountId);
+    let tokens = restoreOwners(contract.tokensPerOwner.get(accountId));
     near.log('tokens: ', tokens)
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokens == null) {
@@ -44,9 +45,10 @@ export function internal_supply_for_owner(contract, accountId) {
 }
 
 //Query for all the tokens for an owner
-export function internal_tokens_for_owner(contract, accountId, fromIndex, limit) {
+export function internal_tokens_for_owner(contract: Contract, accountId: string, fromIndex, limit) {
     //get the set of tokens for the passed in owner
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
+    near.log('tokenSet: ', tokenSet)
 
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokenSet == null) {
@@ -59,6 +61,7 @@ export function internal_tokens_for_owner(contract, accountId, fromIndex, limit)
     let max = limit ? limit : 50;
 
     let keys = tokenSet.toArray();
+    near.log('keys: ', keys)
     let tokens = []
     for(let i = start; i < max; i++) {
         if(i >= keys.length) {

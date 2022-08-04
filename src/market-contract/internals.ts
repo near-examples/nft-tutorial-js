@@ -1,5 +1,6 @@
 import { near, UnorderedSet } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
+import { restoreOwners } from "../nft-contract/internals";
 import { Token } from "./metadata";
 
 // TODO: don't hard code storage byte cost
@@ -76,7 +77,7 @@ export function assert_at_least_one_yocto() {
 //add a token to the set of tokens an owner has
 export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
 
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set

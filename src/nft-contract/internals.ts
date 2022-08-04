@@ -1,4 +1,4 @@
-import { near, UnorderedSet } from "near-sdk-js";
+import { near, UnorderedSet, Vector } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { Token } from "./metadata";
 
@@ -9,6 +9,16 @@ export function assert(statement: boolean, message: string) {
     if (!statement) {
         throw Error(`Assertion failed: ${message}`)
     }
+}
+
+// Magic 0.o
+export function restoreOwners(collection) {
+    if (collection == null) {
+        return null;
+    }
+    (collection.elements as any).prototype = Vector;
+    (collection as any).prototype = UnorderedSet;
+    return collection;
 }
 
 //convert the royalty percentage and amount to pay into a payout (U128)
@@ -76,7 +86,8 @@ export function assert_at_least_one_yocto() {
 //add a token to the set of tokens an owner has
 export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
+    // Object.assign(new UnorderedSet(), tokenSet);
     near.log('tokenSet: ', tokenSet)
 
     if(tokenSet == null) {
@@ -96,7 +107,7 @@ export function internal_add_token_to_owner(contract: Contract, accountId: strin
 //remove a token from an owner (internal method and can't be called directly via CLI).
 export function internal_remove_token_from_owner(contract: Contract, accountId: string, tokenId: string) {
     //we get the set of tokens that the owner has
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
     //if there is no set of tokens for the owner, we panic with the following message:
     if (tokenSet == null) {
         near.panic("Token should be owned by the sender");
