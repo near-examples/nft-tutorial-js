@@ -11,7 +11,7 @@ export function internal_mint(
     perpetualRoyalties: { [accountId: string]: number }
 ) {
     //measure the initial storage being used on the contract TODO
-    //let initialStorageUsage = near.storageUsage();
+    let initialStorageUsage = near.storageUsage();
 
     // create a royalty map to store in the token
     let royalty: { [accountId: string]: number } = {}
@@ -19,7 +19,7 @@ export function internal_mint(
     // if perpetual royalties were passed into the function: TODO: add isUndefined fn
     if (perpetualRoyalties != null) {
         //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
-        assert(perpetualRoyalties.length < 7, "Cannot add more than 6 perpetual royalty amounts");
+        assert(Object.keys(perpetualRoyalties).length < 7, "Cannot add more than 6 perpetual royalty amounts");
         
         //iterate through the perpetual royalties and insert the account and amount in the royalty map
         Object.entries(perpetualRoyalties).forEach(([account, amount], index) => {
@@ -46,6 +46,7 @@ export function internal_mint(
     
     //insert the token ID and metadata
     contract.tokenMetadataById.set(tokenId, metadata);
+    near.log('contract.tokenMetadataById: ', contract.tokenMetadataById.toArray())
 
     //call the internal method for adding the token to the owner
     internal_add_token_to_owner(contract, token.owner_id, tokenId)
@@ -72,7 +73,7 @@ export function internal_mint(
     near.log(`EVENT_JSON:${JSON.stringify(nftMintLog)}`);
 
     //calculate the required storage which was the used - initial TODO
-    let requiredStorageInBytes = 1000;//near.storageUsage() - initialStorageUsage;
+    let requiredStorageInBytes = near.storageUsage().valueOf() - initialStorageUsage.valueOf();
 
     //refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
     refundDeposit(requiredStorageInBytes);

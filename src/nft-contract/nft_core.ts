@@ -1,17 +1,17 @@
 import { bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assert, assert_one_yocto, internal_add_token_to_owner, internal_remove_token_from_owner, internal_transfer, refundDeposit, refund_approved_account_ids } from "./internals";
-import { JsonToken, Token } from "./metadata";
+import { JsonToken, Token, TokenMetadata } from "./metadata";
 
-const GAS_FOR_RESOLVE_TRANSFER = 10_000_000_000_000;
-const GAS_FOR_NFT_ON_TRANSFER = 25_000_000_000_000;
+const GAS_FOR_RESOLVE_TRANSFER = 40_000_000_000_000;
+const GAS_FOR_NFT_ON_TRANSFER = 35_000_000_000_000;
 
 //get the information for a specific token ID
 export function internal_nft_token(
     contract: Contract, 
     tokenId: string, 
 ) {
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     //if there wasn't a token ID in the tokens_by_id collection, we return None
     if (token == null) {
         return null;
@@ -19,7 +19,7 @@ export function internal_nft_token(
 
     //if there is some token ID in the tokens_by_id collection
     //we'll get the metadata for that token
-    let metadata = contract.tokenMetadataById.get(tokenId);
+    let metadata = contract.tokenMetadataById.get(tokenId) as TokenMetadata;
     
     //we return the JsonToken
     let jsonToken = new JsonToken({
@@ -157,7 +157,7 @@ export function internal_resolve_transfer(
     }
 
     //get the token object if there is some token object
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token != null) {
         if (token.owner_id != receiverId) {
             //we refund the owner for releasing the storage used up by the approved account IDs

@@ -1,4 +1,4 @@
-import { near, UnorderedSet } from "near-sdk-js";
+import { near, UnorderedSet, Vector } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { Token } from "./metadata";
 
@@ -11,9 +11,17 @@ export function assert(statement: boolean, message: string) {
     }
 }
 
+// Magic 0.o
+export function restoreOwners(collection) {
+    if (collection == null) {
+        return null;
+    }
+    return UnorderedSet.deserialize(collection as UnorderedSet);
+}
+
 //convert the royalty percentage and amount to pay into a payout (U128)
-export function royalty_to_payout(royaltyPercentage: number, amountToPay: bigint): bigint {
-    return BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)
+export function royalty_to_payout(royaltyPercentage: number, amountToPay: bigint): string {
+    return (BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)).toString();
 }
 
 //calculate how many bytes the account ID is taking up
@@ -40,9 +48,9 @@ export function refund_approved_account_ids(accountId: string, approvedAccountId
 }
 
 //refund the initial deposit based on the amount of storage that was used up
-export function refundDeposit(storageUsed: number) {
+export function refundDeposit(storageUsed: bigint) {
     //get how much it would cost to store the information
-    let requiredCost = BigInt(storageUsed) * storageCostPerByte
+    let requiredCost = storageUsed * storageCostPerByte
     //get the attached deposit
     let attachedDeposit = near.attachedDeposit().valueOf();
 
@@ -54,6 +62,7 @@ export function refundDeposit(storageUsed: number) {
 
     //get the refund amount from the attached deposit - required cost
     let refund = attachedDeposit - requiredCost;
+    near.log(`Refunding ${refund} yoctoNEAR`);
 
     //if the refund is greater than 1 yocto NEAR, we refund the predecessor that amount
     if (refund > 1) {
@@ -76,15 +85,19 @@ export function assert_at_least_one_yocto() {
 //add a token to the set of tokens an owner has
 export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
+    // Object.assign(new UnorderedSet(), tokenSet);
+    near.log('tokenSet: ', tokenSet)
 
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set
-        tokenSet = new UnorderedSet(accountId);
+        tokenSet = new UnorderedSet("tokensPerOwner" + accountId.toString());
+        near.log('tokenSet after default: ', tokenSet.toArray())
     }
 
     //we insert the token ID into the set
     tokenSet.set(tokenId);
+    near.log('tokenSet after set: ', tokenSet.toArray())
 
     //we insert that set for the given account ID. 
     contract.tokensPerOwner.set(accountId, tokenSet);
@@ -93,7 +106,7 @@ export function internal_add_token_to_owner(contract: Contract, accountId: strin
 //remove a token from an owner (internal method and can't be called directly via CLI).
 export function internal_remove_token_from_owner(contract: Contract, accountId: string, tokenId: string) {
     //we get the set of tokens that the owner has
-    let tokenSet = contract.tokensPerOwner.get(accountId);
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
     //if there is no set of tokens for the owner, we panic with the following message:
     if (tokenSet == null) {
         near.panic("Token should be owned by the sender");
@@ -113,7 +126,7 @@ export function internal_remove_token_from_owner(contract: Contract, accountId: 
 //transfers the NFT to the receiver_id (internal method and can't be called directly via CLI).
 export function internal_transfer(contract: Contract, senderId: string, receiverId: string, tokenId: string, approvalId: number, memo: string): Token {
     //get the token object by passing in the token_id
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token found");
     }

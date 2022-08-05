@@ -15,9 +15,9 @@ export const NFT_STANDARD_NAME = "nep171";
 @NearBindgen
 export class Contract extends NearContract {
     owner_id: string;
-    tokensPerOwner: LookupMap<string, UnorderedSet<string>>;
-    tokensById: LookupMap<string, Token>;
-    tokenMetadataById: UnorderedMap<string, TokenMetadata>;
+    tokensPerOwner: LookupMap;
+    tokensById: LookupMap;
+    tokenMetadataById: UnorderedMap;
     metadata: NFTContractMetadata;
 
     /*
@@ -25,7 +25,7 @@ export class Contract extends NearContract {
         this initializes the contract with metadata that was passed in and
         the owner_id. 
     */
-    constructor({ 
+    constructor({
         owner_id, 
         metadata = {
             spec: "nft-1.0.0",
@@ -36,16 +36,13 @@ export class Contract extends NearContract {
         super()
         this.owner_id = owner_id;
         this.tokensPerOwner = new LookupMap("tokensPerOwner");
-        this.tokensById = new LookupMap("tokensPerOwner");
+        this.tokensById = new LookupMap("tokensById");
         this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
         this.metadata = metadata;
     }
 
-    deserialize() {
-        super.deserialize()
-        this.tokensPerOwner = new LookupMap("tokensPerOwner");
-        this.tokensById = new LookupMap("tokensPerOwner");
-        this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
+    default() {
+        return new Contract({owner_id: ''})
     }
 
     /*
