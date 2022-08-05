@@ -851,9 +851,10 @@ ms@2.1.2:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-near-sdk-js@near/near-sdk-js#serhii/serialization:
-  version "0.4.0-4"
-  resolved "https://codeload.github.com/near/near-sdk-js/tar.gz/3b14d57e32b2ab466ce3cf2e7ee726b0ac736913"
+near-sdk-js@0.4.0-5:
+  version "0.4.0-5"
+  resolved "https://registry.yarnpkg.com/near-sdk-js/-/near-sdk-js-0.4.0-5.tgz#deb2ace9d0914bc5c9f43a517638b75cb9bdb746"
+  integrity sha512-lOQDc61vf4QvM2BJkaVJcRY21l4K46xKJXJbdKanqi/WCYnKLV5i0UUbJ4sjOcScS1BHZyitLWaAdLGCCzYniQ==
   dependencies:
     "@babel/core" "^7.17.5"
     "@babel/plugin-proposal-decorators" "^7.17.2"

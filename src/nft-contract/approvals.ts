@@ -42,7 +42,7 @@ export function internal_nft_approve(
     contract.tokensById.set(tokenId, token);
 
     //refund any excess storage attached by the user. If the user didn't attach enough, panic. 
-    refundDeposit(storageUsed);
+    refundDeposit(BigInt(storageUsed));
     
     //if some message was passed into the function, we initiate a cross contract call on the
     //account we're giving access to. 

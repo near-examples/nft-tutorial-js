@@ -9,7 +9,7 @@ export function internal_nft_payout(
     tokenId: string,
     balance: bigint, 
     maxLenPayout: number,
-    ): { payout: {[key: string]: bigint }} {
+    ): { payout: {[key: string]: string }} {
     //get the token object
     let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
@@ -21,7 +21,7 @@ export function internal_nft_payout(
     //keep track of the total perpetual royalties
     let totalPerpetual = 0;
     //keep track of the payout object to send back
-    let payoutObj: { [key: string]: bigint } = {};
+    let payoutObj: { [key: string]: string } = {};
     //get the royalty object from token
     let royalty = token.royalty;
 
@@ -55,7 +55,7 @@ export function internal_nft_transfer_payout(
     memo: string,
     balance: bigint,
     maxLenPayout: number,
-    ): { payout: {[key: string]: bigint }} {
+    ): { payout: {[key: string]: string }} {
     //assert that the user attached 1 yocto NEAR for security reasons
     assert_one_yocto();
     //get the sender ID
@@ -81,7 +81,7 @@ export function internal_nft_transfer_payout(
     //keep track of the total perpetual royalties
     let totalPerpetual = 0;
     //keep track of the payout object to send back
-    let payoutObj: { [key: string]: bigint } = {};
+    let payoutObj: { [key: string]: string } = {};
     //get the royalty object from token
     let royalty = previousToken.royalty;
 

@@ -20,14 +20,12 @@ export function internal_nft_tokens(
 ): JsonToken[] {
     let tokens = [];
     let keys = contract.tokenMetadataById.toArray();
-    near.log('keys: ', keys)
     // Paginate through the keys using the fromIndex and limit
-    // for (let i = fromIndex; i < keys.length && i < fromIndex + limit; i++) {
-    //     // get the token object from the keys
-    //     let jsonToken = internal_nft_token(contract, keys[i][0]);
-    //     near.log('jsonToken: ', jsonToken)
-    //     tokens.push(jsonToken);
-    // }
+    for (let i = fromIndex; i < keys.length && i < fromIndex + limit; i++) {
+        // get the token object from the keys
+        let jsonToken = internal_nft_token(contract, keys[i][0]);
+        tokens.push(jsonToken);
+    }
     return tokens;
 }
 
@@ -35,7 +33,6 @@ export function internal_nft_tokens(
 export function internal_supply_for_owner(contract, accountId): number {
     //get the set of tokens for the passed in owner
     let tokens = restoreOwners(contract.tokensPerOwner.get(accountId));
-    near.log('tokens: ', tokens)
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokens == null) {
         return 0
@@ -49,7 +46,6 @@ export function internal_supply_for_owner(contract, accountId): number {
 export function internal_tokens_for_owner(contract: Contract, accountId: string, fromIndex, limit): JsonToken[] {
     //get the set of tokens for the passed in owner
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
-    near.log('tokenSet: ', tokenSet)
 
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
     if (tokenSet == null) {
@@ -62,17 +58,13 @@ export function internal_tokens_for_owner(contract: Contract, accountId: string,
     let max = limit ? limit : 50;
 
     let keys = tokenSet.toArray();
-    near.log('keys: ', keys)
     let tokens: JsonToken[] = []
     for(let i = start; i < max; i++) {
         if(i >= keys.length) {
-            near.log(`reached the end of keys with length: ${keys.length}`);
-            return;
+            break;
         }
         let token = internal_nft_token(contract, keys[i]);
-        near.log("token - ", token)
         tokens.push(token);
-        near.log(`el: ${JSON.stringify(keys[i])}`);
     }
     return tokens;
 }

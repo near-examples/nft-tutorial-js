@@ -19,7 +19,7 @@ export function internal_mint(
     // if perpetual royalties were passed into the function: TODO: add isUndefined fn
     if (perpetualRoyalties != null) {
         //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
-        assert(perpetualRoyalties.length < 7, "Cannot add more than 6 perpetual royalty amounts");
+        assert(Object.keys(perpetualRoyalties).length < 7, "Cannot add more than 6 perpetual royalty amounts");
         
         //iterate through the perpetual royalties and insert the account and amount in the royalty map
         Object.entries(perpetualRoyalties).forEach(([account, amount], index) => {
@@ -49,7 +49,7 @@ export function internal_mint(
     near.log('contract.tokenMetadataById: ', contract.tokenMetadataById.toArray())
 
     //call the internal method for adding the token to the owner
-    //internal_add_token_to_owner(contract, token.owner_id, tokenId)
+    internal_add_token_to_owner(contract, token.owner_id, tokenId)
     
     // Construct the mint log as per the events standard.
     let nftMintLog = {
