@@ -13,7 +13,7 @@
   "author": "Near Inc <hello@nearprotocol.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "near-sdk-js": "^0.4.0-4",
+    "near-sdk-js": "near/near-sdk-js#serhii/serialization",
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {

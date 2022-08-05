@@ -851,10 +851,9 @@ ms@2.1.2:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-near-sdk-js@^0.4.0-4:
+near-sdk-js@near/near-sdk-js#serhii/serialization:
   version "0.4.0-4"
-  resolved "https://registry.yarnpkg.com/near-sdk-js/-/near-sdk-js-0.4.0-4.tgz#8c30f3f2f6a0b82a210d04d86f6ccc3f939ee63d"
-  integrity sha512-p08dr7mTRJIhiV5VXQ0PkkqTqPOg1OPqqHwKheBZK/vGz24h7c/6Dn2aPC5kb7bzlOmZ4DJz9FsWqtAKFe19ng==
+  resolved "https://codeload.github.com/near/near-sdk-js/tar.gz/3b14d57e32b2ab466ce3cf2e7ee726b0ac736913"
   dependencies:
     "@babel/core" "^7.17.5"
     "@babel/plugin-proposal-decorators" "^7.17.2"
@@ -864,7 +863,6 @@ near-sdk-js@^0.4.0-4:
     "@rollup/plugin-node-resolve" "^13.1.1"
     rollup "^2.61.1"
     rollup-plugin-sourcemaps "^0.6.3"
-    superserial "^0.3.0"
     yargs "^17.5.1"
 
 node-releases@^2.0.3:
@@ -966,11 +964,6 @@ strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
   dependencies:
     ansi-regex "^5.0.1"
-
-superserial@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/superserial/-/superserial-0.3.0.tgz#9bed3a49461cf714e789ccad01722ee2242126e6"
-  integrity sha512-whx28H+uq/0eIoCkLVpRRhpBqjHTfdzugiNv0mIJicBNdm9Z5qKcs9yDx0hvOtL7+JiYKYamxPUO0EWGxAAZBw==
 
 supports-color@^5.3.0:
   version "5.5.0"

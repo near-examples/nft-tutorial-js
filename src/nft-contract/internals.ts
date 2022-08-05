@@ -13,12 +13,10 @@ export function assert(statement: boolean, message: string) {
 
 // Magic 0.o
 export function restoreOwners(collection) {
-    // if (collection == null) {
-    //     return null;
-    // }
-    // (collection.elements as any).prototype = Vector;
-    // (collection as any).prototype = UnorderedSet;
-    return collection;
+    if (collection == null) {
+        return null;
+    }
+    return UnorderedSet.deserialize(collection as UnorderedSet);
 }
 
 //convert the royalty percentage and amount to pay into a payout (U128)
@@ -127,7 +125,7 @@ export function internal_remove_token_from_owner(contract: Contract, accountId: 
 //transfers the NFT to the receiver_id (internal method and can't be called directly via CLI).
 export function internal_transfer(contract: Contract, senderId: string, receiverId: string, tokenId: string, approvalId: number, memo: string): Token {
     //get the token object by passing in the token_id
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token found");
     }
