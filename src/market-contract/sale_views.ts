@@ -94,10 +94,10 @@ export function internal_sales_by_nft_contract_id(contract: Contract, accountId:
 export function internal_get_sale(
     contract: Contract, 
     nftContractToken: string
-) {
+): Sale {
     //try and get the sale object for the given unique sale ID. Will return an option since
     //we're not guaranteed that the unique sale ID passed in will be valid.n);
-    return contract.sales.get(nftContractToken);
+    return contract.sales.get(nftContractToken) as Sale;
 }
 
 

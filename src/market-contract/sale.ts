@@ -154,8 +154,7 @@ export function process_purchase(contract, nftContactId, tokenId, price, buyerId
     check to see if it's authentic and there's no problems. If everything is fine, it will pay the accounts. If there's a problem,
     it will refund the buyer for the price. 
 */
-export function resolve_purchase(
-    contract: Contract,
+export function internal_resolve_purchase(
     buyerId: string,
     price: string
 ) {

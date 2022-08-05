@@ -3,7 +3,7 @@ import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals";
 import { Token } from "./metadata";
 
-const GAS_FOR_NFT_ON_APPROVE = 10_000_000_000_000;
+const GAS_FOR_NFT_ON_APPROVE = 35_000_000_000_000;
 
 //approve an account ID to transfer a token on your behalf
 export function internal_nft_approve(

@@ -1,5 +1,8 @@
 import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet, assert } from 'near-sdk-js'
 import { assert_one_yocto, restoreOwners } from '../nft-contract/internals';
+import { internal_nft_on_approve } from './nft_callbacks';
+import { internal_offer, internal_remove_sale, internal_resolve_purchase, internal_update_price, Sale } from './sale';
+import { internal_get_sale, internal_sales_by_nft_contract_id, internal_sales_by_owner_id, internal_supply_by_nft_contract_id, internal_supply_by_owner_id, internal_supply_sales } from './sale_views';
 
 /// This spec can be treated like a version of the standard.
 export const NFT_METADATA_SPEC = "nft-1.0.0";
@@ -72,11 +75,11 @@ export class Contract extends NearContract {
         assert(deposit >= STORAGE_PER_SALE, `Requires minimum deposit of ${STORAGE_PER_SALE}`);
 
         //get the balance of the account (if the account isn't in the map we default to a balance of 0)
-        let balance: bigint = this.storageDeposits.get(storageAccountId) as bigint || BigInt(0);
+        let balance: string = this.storageDeposits.get(storageAccountId) as string || "0";
         //add the deposit to their balance
-        balance += deposit;
+        let newBalance = BigInt(balance) + deposit;
         //insert the balance back into the map for that account ID
-        this.storageDeposits.set(storageAccountId, balance);
+        this.storageDeposits.set(storageAccountId, newBalance.toString());
     }
 
     @call
@@ -91,7 +94,7 @@ export class Contract extends NearContract {
         //the account to withdraw storage to is always the function caller
         let ownerId = near.predecessorAccountId();
         //get the amount that the user has by removing them from the map. If they're not in the map, default to 0
-        let amount: bigint = this.storageDeposits.remove(ownerId) as bigint || BigInt(0);
+        let amount: string = this.storageDeposits.remove(ownerId) as string || "0";
         
         //how many sales is that user taking up currently. This returns a set
         let sales = restoreOwners(this.byOwnerId.get(ownerId));
@@ -104,19 +107,19 @@ export class Contract extends NearContract {
         //how much NEAR is being used up for all the current sales on the account 
         let diff = BigInt(len) * STORAGE_PER_SALE;
         //the excess to withdraw is the total storage paid - storage being used up.
-        amount -= diff;
+        let amountLeft = BigInt(amount) - diff;
 
         //if that excess to withdraw is > 0, we transfer the amount to the user.
-        if (amount > 0) {
+        if (amountLeft > 0) {
             const promise = near.promiseBatchCreate(ownerId);
-            near.promiseBatchActionTransfer(promise, amount)
+            near.promiseBatchActionTransfer(promise, amountLeft)
         }
 
         //we need to add back the storage being used up into the map if it's greater than 0.
         //this is so that if the user had 500 sales on the market, we insert that value here so
         //if those sales get taken down, the user can then go and withdraw 500 sales worth of storage.
         if (diff > 0) {
-            this.storageDeposits.set(ownerId, diff);
+            this.storageDeposits.set(ownerId, diff.toString());
         }
     }
 
@@ -131,4 +134,80 @@ export class Contract extends NearContract {
     storage_balance_of({ account_id }: { account_id: string}): string {
         return this.storageDeposits.get(account_id) as string || "0";
     }
+
+    /*
+        SALES
+    */
+    @call
+    //removes a sale from the market. 
+    remove_sale({nft_contract_id, token_id}:{nft_contract_id: string, token_id: string}) {
+        return internal_remove_sale(this, nft_contract_id, token_id);
+    }
+
+    @call
+    //updates the price for a sale on the market
+    update_price({nft_contract_id, token_id, price}:{nft_contract_id: string, token_id: string, price: string}) {
+        return internal_update_price(this, nft_contract_id, token_id, price);
+    }
+
+    @call
+    //place an offer on a specific sale. The sale will go through as long as your deposit is greater than or equal to the list price
+    offer({nft_contract_id, token_id}:{nft_contract_id: string, token_id: string}) {
+        return internal_offer(this, nft_contract_id, token_id);
+    }
+
+    @call
+    //place an offer on a specific sale. The sale will go through as long as your deposit is greater than or equal to the list price
+    resolve_purchase({buyer_id, price}:{buyer_id: string, price: string}) {
+        return internal_resolve_purchase(buyer_id, price);
+    }    
+
+    /*
+        SALE VIEWS
+    */
+    @view
+    //returns the number of sales the marketplace has up (as a string)
+    get_supply_sales(): string {
+        return internal_supply_sales(this);
+    }
+
+    @view
+    //returns the number of sales for a given account (result is a string)
+    get_supply_by_owner_id({account_id}:{account_id: string}): string {
+        return internal_supply_by_owner_id(this, account_id);
+    }
+
+    @view
+    //returns paginated sale objects for a given account. (result is a vector of sales)
+    get_sales_by_owner_id({account_id, from_index, limit}:{account_id: string, from_index?: string, limit?: bigint}): Sale[] {
+        return internal_sales_by_owner_id(this, account_id, from_index, limit);
+    }
+
+    @view
+    //returns paginated sale objects for a given account. (result is a vector of sales)
+    get_supply_by_nft_contract_id({nft_contract_id}:{nft_contract_id: string}): string {
+        return internal_supply_by_nft_contract_id(this, nft_contract_id);
+    }
+
+    @view
+    //returns paginated sale objects associated with a given nft contract. (result is a vector of sales)
+    get_sales_by_nft_contract_id({nft_contract_id, from_index, limit}:{nft_contract_id: string, from_index?: string, limit?: bigint}): Sale[] {
+        return internal_sales_by_nft_contract_id(this, nft_contract_id, from_index, limit);
+    }
+
+    @view
+    //get a sale information for a given unique sale ID (contract + DELIMITER + token ID)
+    get_sale({nft_contract_token}:{nft_contract_token: string}): Sale {
+        return internal_get_sale(this, nft_contract_token);
+    }
+
+    /*
+        APPROVALS
+    */
+    @call
+        /// where we add the sale because we know nft owner can only call nft_approve
+        nft_on_approve({token_id, owner_id, approval_id, msg}:{token_id: string, owner_id: string, approval_id: number, msg: string}) {
+        return internal_nft_on_approve(this, token_id, owner_id, approval_id, msg);
+    }  
+
 }
