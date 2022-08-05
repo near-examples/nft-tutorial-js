@@ -101,13 +101,12 @@ export function internal_offer(contract, nftContactId, tokenId) {
     assert(deposit >= price, "deposit must be greater than or equal to price");
     
     //process the purchase (which will remove the sale, transfer and get the payout from the nft contract, and then distribute royalties) 
-    process_purchase(contract, nftContactId, tokenId, deposit, buyerId);
+    process_purchase(contract, nftContactId, tokenId, deposit.toString(), buyerId);
 }
 
 //private function used when a sale is purchased. 
 //this will remove the sale, transfer and get the payout from the nft contract, and then distribute royalties
 export function process_purchase(contract, nftContactId, tokenId, price, buyerId) {
-    assert(near.currentAccountId() === near.predecessorAccountId(), "Only the contract itself can call this method");
     //get the sale object by removing the sale
     let sale = internals_remove_sale(contract, nftContactId, tokenId);
 
