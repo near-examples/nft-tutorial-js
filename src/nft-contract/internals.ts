@@ -48,9 +48,9 @@ export function refund_approved_account_ids(accountId: string, approvedAccountId
 }
 
 //refund the initial deposit based on the amount of storage that was used up
-export function refundDeposit(storageUsed: number) {
+export function refundDeposit(storageUsed: bigint) {
     //get how much it would cost to store the information
-    let requiredCost = BigInt(storageUsed) * storageCostPerByte
+    let requiredCost = storageUsed * storageCostPerByte
     //get the attached deposit
     let attachedDeposit = near.attachedDeposit().valueOf();
 
@@ -90,7 +90,7 @@ export function internal_add_token_to_owner(contract: Contract, accountId: strin
 
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set
-        tokenSet = new UnorderedSet(accountId);
+        tokenSet = new UnorderedSet("tokensPerOwner" + accountId.toString());
         near.log('tokenSet after default: ', tokenSet.toArray())
     }
 
