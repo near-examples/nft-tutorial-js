@@ -1,6 +1,7 @@
 import { bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals";
+import { Token } from "./metadata";
 
 const GAS_FOR_NFT_ON_APPROVE = 10_000_000_000_000;
 
@@ -18,7 +19,7 @@ export function internal_nft_approve(
     assert_at_least_one_yocto();
 
     //get the token object from the token ID
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token");
     }
@@ -73,7 +74,7 @@ export function internal_nft_is_approved(
     approvalId: number
 ) {
     //get the token object from the token_id
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token");
     }
@@ -107,7 +108,7 @@ export function internal_nft_revoke(
     assert_one_yocto();
 
     //get the token object using the passed in token_id
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token");
     }
@@ -137,7 +138,7 @@ export function internal_nft_revoke_all(
     assert_one_yocto();
 
     //get the token object from the passed in token ID
-    let token = contract.tokensById.get(tokenId);
+    let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
         near.panic("no token");
     }
