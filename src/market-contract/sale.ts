@@ -1,6 +1,6 @@
 import { assert, bytes, near } from "near-sdk-js";
 import { Contract, DELIMETER } from ".";
-import { assertOneYocto, internallyRemoveSale } from "./internals";
+import { assertOneYocto, internallyRemoveSale } from "./internal";
 
 //GAS constants to attach to calls
 const GAS_FOR_ROYALTIES = 115_000_000_000_000;
