@@ -34,7 +34,27 @@ export function internalSupplyForOwner(contract, accountId): number {
 
 //Query for all the tokens for an owner
 export function internalTokensForOwner(contract: Contract, accountId: string, fromIndex, limit): JsonToken[] {
-    /*
-        FILL THIS IN
-    */
+    //get the set of tokens for the passed in owner
+    let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
+
+    //if there isn't a set of tokens for the passed in account ID, we'll return 0
+    if (tokenSet == null) {
+        return [];
+    }
+    
+    //where to start pagination - if we have a fromIndex, we'll use that - otherwise start from 0 index
+    let start = fromIndex ? fromIndex : 0;
+    //take the first "limit" elements in the array. If we didn't specify a limit, use 50
+    let max = limit ? limit : 50;
+
+    let keys = tokenSet.toArray();
+    let tokens: JsonToken[] = []
+    for(let i = start; i < max; i++) {
+        if(i >= keys.length) {
+            break;
+        }
+        let token = internalNftToken(contract, keys[i]);
+        tokens.push(token);
+    }
+    return tokens;
 }
