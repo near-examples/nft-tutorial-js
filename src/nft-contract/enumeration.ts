@@ -17,8 +17,8 @@ export function internalTotalSupply(
 //Query for nft tokens on the contract regardless of the owner using pagination
 export function internalNftTokens(
     contract: Contract, 
-    fromIndex: number | null = 0, 
-    limit: number | null = 50
+    fromIndex?: string,
+    limit?: number
 ): JsonToken[] {
     /*
         FILL THIS IN
