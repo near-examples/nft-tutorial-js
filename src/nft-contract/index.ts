@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet } from 'near-sdk-js'
-import { NFTContractMetadata, Token, TokenMetadata, internal_nft_metadata } from './metadata';
+import { NFTContractMetadata, Token, TokenMetadata, internalNftMetadata } from './metadata';
 import { internalMint } from './mint';
 import { internalNftTokens, internalSupplyForOwner, internalTokensForOwner, internalTotalSupply } from './enumeration';
 import { internalNftToken, internalNftTransfer, internalNftTransferCall, internalResolveTransfer } from './nft_core';
@@ -157,6 +157,6 @@ export class Contract extends NearContract {
     @view
     //Query for all the tokens for an owner
     nft_metadata() {
-        return internal_nft_metadata(this);
+        return internalNftMetadata(this);
     }
 }
