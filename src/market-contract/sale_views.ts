@@ -1,5 +1,5 @@
 import { Contract } from ".";
-import { restoreOwners } from "./internals";
+import { restoreOwners } from "./internal";
 import { Sale } from "./sale";
     
 //returns the number of sales the marketplace has up (as a string)
