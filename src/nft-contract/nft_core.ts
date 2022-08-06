@@ -72,7 +72,6 @@ export function internalNftTransferCall(
         senderId,
         receiverId,
         tokenId,
-        approvalId,
         memo,
     );
 
