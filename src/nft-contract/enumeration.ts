@@ -26,14 +26,14 @@ export function internalNftTokens(
 }
 
 //get the total supply of NFTs for a given owner
-export function internalSupplyForOwner(contract, accountId): number {
+export function internalSupplyForOwner(contract: Contract, accountId: string): number {
     /*
         FILL THIS IN
     */
 }
 
 //Query for all the tokens for an owner
-export function internalTokensForOwner(contract: Contract, accountId: string, fromIndex, limit): JsonToken[] {
+export function internalTokensForOwner(contract: Contract, accountId: string, fromIndex?: string, limit: number): JsonToken[] {
     /*
         FILL THIS IN
     */
