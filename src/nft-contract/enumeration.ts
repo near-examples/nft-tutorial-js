@@ -9,27 +9,44 @@ import { internalNftToken } from "./nft_core";
 export function internalTotalSupply(
     contract: Contract
 ): number {
-    /*
-        FILL THIS IN
-    */
+    //return the length of the token metadata by ID
+    return contract.tokenMetadataById.len();
 }
 
 //Query for nft tokens on the contract regardless of the owner using pagination
 export function internalNftTokens(
     contract: Contract, 
-    fromIndex: number | null = 0, 
-    limit: number | null = 50
+    fromIndex?: string, 
+    limit?: number
 ): JsonToken[] {
-    /*
-        FILL THIS IN
-    */
+    let tokens = [];
+
+    //where to start pagination - if we have a fromIndex, we'll use that - otherwise start from 0 index
+    let start = fromIndex ? parseInt(fromIndex) : 0;
+    //take the first "limit" elements in the array. If we didn't specify a limit, use 50
+    let max = limit ? limit : 50;
+
+    let keys = contract.tokenMetadataById.toArray();
+    // Paginate through the keys using the fromIndex and limit
+    for (let i = start; i < keys.length && i < start + max; i++) {
+        // get the token object from the keys
+        let jsonToken = internalNftToken(contract, keys[i][0]);
+        tokens.push(jsonToken);
+    }
+    return tokens;
 }
 
 //get the total supply of NFTs for a given owner
 export function internalSupplyForOwner(contract: Contract, accountId: string): number {
-    /*
-        FILL THIS IN
-    */
+    //get the set of tokens for the passed in owner
+    let tokens = restoreOwners(contract.tokensPerOwner.get(accountId));
+    //if there isn't a set of tokens for the passed in account ID, we'll return 0
+    if (tokens == null) {
+        return 0
+    }
+
+    //if there is some set of tokens, we'll return the length 
+    return tokens.len();
 }
 
 //Query for all the tokens for an owner
