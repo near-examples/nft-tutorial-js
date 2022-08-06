@@ -43,7 +43,6 @@ export function internalAddTokenToOwner(contract: Contract, accountId: string, t
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set
         tokenSet = new UnorderedSet("tokensPerOwner" + accountId.toString());
-        near.log('tokenSet after default: ', tokenSet.toArray())
     }
 
     //we insert the token ID into the set
