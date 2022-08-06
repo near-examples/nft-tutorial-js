@@ -15,11 +15,9 @@ export const NFT_STANDARD_NAME = "nep171";
 
 @NearBindgen
 export class Contract extends NearContract {
-    owner_id: string;
-    tokensPerOwner: LookupMap;
-    tokensById: LookupMap;
-    tokenMetadataById: UnorderedMap;
-    metadata: NFTContractMetadata;
+    /*
+        FILL THIS IN
+    */
 
     /*
         initialization function (can only be called once).
@@ -34,12 +32,9 @@ export class Contract extends NearContract {
             symbol: "GOTEAM"
         } 
     }) {
-        super()
-        this.owner_id = owner_id;
-        this.tokensPerOwner = new LookupMap("tokensPerOwner");
-        this.tokensById = new LookupMap("tokensById");
-        this.tokenMetadataById = new UnorderedMap("tokenMetadataById");
-        this.metadata = metadata;
+    /*
+        FILL THIS IN
+    */
     }
 
     default() {
