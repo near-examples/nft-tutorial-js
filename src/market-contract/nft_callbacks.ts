@@ -1,10 +1,10 @@
 import { assert, near, UnorderedSet } from "near-sdk-js";
-import { DELIMETER } from ".";
+import { Contract, DELIMETER } from ".";
 import { Sale } from "./sale";
-import { internal_supply_by_owner_id } from "./sale_views";
+import { internalSupplyByOwnerId } from "./sale_views";
 
 /// where we add the sale because we know nft owner can only call nft_approve
-export function internal_nft_on_approve(contract, tokenId, ownerId, approvalId, msg) {
+export function internalNftOnApprove(contract: Contract, tokenId: string, ownerId: string, approvalId: number, msg: string) {
     // get the contract ID which is the predecessor
     let contractId = near.predecessorAccountId();
     //get the signer which is the person who initiated the transaction
@@ -21,7 +21,7 @@ export function internal_nft_on_approve(contract, tokenId, ownerId, approvalId, 
     //get the total storage paid by the owner
     let ownerPaidStorage = contract.storageDeposits.get(signerId) || BigInt(0);
     //get the storage required which is simply the storage for the number of sales they have + 1 
-    let signerStorageRequired = (BigInt(internal_supply_by_owner_id(contract, signerId)) + BigInt(1)) * BigInt(storageAmount); 
+    let signerStorageRequired = (BigInt(internalSupplyByOwnerId(contract, signerId)) + BigInt(1)) * BigInt(storageAmount); 
     
     //make sure that the total paid is >= the required storage
     assert(ownerPaidStorage >= signerStorageRequired, "the owner does not have enough storage to approve this token");
@@ -36,23 +36,23 @@ export function internal_nft_on_approve(contract, tokenId, ownerId, approvalId, 
     
     //insert the key value pair into the sales map. Key is the unique ID. value is the sale object
     contract.sales.set(contractAndTokenId, new Sale({
-        owner_id: ownerId, //owner of the sale / token
-        approval_id: approvalId, //approval ID for that token that was given to the market
-        nft_contract_id: contractId, //NFT contract the token was minted on
-        token_id: tokenId, //the actual token ID
-        sale_conditions: saleConditions.sale_conditions //the sale conditions 
+        ownerId: ownerId, //owner of the sale / token
+        approvalId: approvalId, //approval ID for that token that was given to the market
+        nftContractId: contractId, //NFT contract the token was minted on
+        tokenId: tokenId, //the actual token ID
+        saleConditions: saleConditions.sale_conditions //the sale conditions 
     }));
 
     //Extra functionality that populates collections necessary for the view calls 
     //get the sales by owner ID for the given owner. If there are none, we create a new empty set
-    let byOwnerId = contract.byOwnerId.get(ownerId) || new UnorderedSet(ownerId);
+    let byOwnerId = contract.byOwnerId.get(ownerId) as UnorderedSet || new UnorderedSet(ownerId);
     //insert the unique sale ID into the set
     byOwnerId.set(contractAndTokenId);
     //insert that set back into the collection for the owner
     contract.byOwnerId.set(ownerId, byOwnerId);
     
     //get the token IDs for the given nft contract ID. If there are none, we create a new empty set
-    let byNftContractId = contract.byNftContractId.get(contractId) || new UnorderedSet(contractId);
+    let byNftContractId = contract.byNftContractId.get(contractId) as UnorderedSet || new UnorderedSet(contractId);
     //insert the token ID into the set
     byNftContractId.set(tokenId);
     //insert the set back into the collection for the given nft contract ID

@@ -10,12 +10,12 @@ export function restoreOwners(collection) {
 }
 
 //used to make sure the user attached exactly 1 yoctoNEAR
-export function assert_one_yocto() {
+export function assertOneYocto() {
     assert(near.attachedDeposit().toString() === "1", "Requires attached deposit of exactly 1 yoctoNEAR");
 }
 
 //internal method for removing a sale from the market. This returns the previously removed sale object
-export function internals_remove_sale(contract: Contract, nftContractId: string, tokenId: string): Sale {
+export function internallyRemoveSale(contract: Contract, nftContractId: string, tokenId: string): Sale {
     //get the unique sale ID (contract + DELIMITER + token ID)
     let contractAndTokenId = `${nftContractId}${DELIMETER}${tokenId}`;
     //get the sale object by removing the unique sale ID. If there was no sale, panic

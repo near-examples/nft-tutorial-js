@@ -2,10 +2,10 @@ import { near, UnorderedSet } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { restoreOwners } from "./internals";
 import { JsonToken } from "./metadata";
-import { internal_nft_token } from "./nft_core";
+import { internalNftToken } from "./nft_core";
 
 //Query for the total supply of NFTs on the contract
-export function internal_total_supply(
+export function internalTotalSupply(
     contract: Contract
 ): number {
     //return the length of the token metadata by ID
@@ -13,7 +13,7 @@ export function internal_total_supply(
 }
 
 //Query for nft tokens on the contract regardless of the owner using pagination
-export function internal_nft_tokens(
+export function internalNftTokens(
     contract: Contract, 
     fromIndex: number | null = 0, 
     limit: number | null = 50
@@ -23,14 +23,14 @@ export function internal_nft_tokens(
     // Paginate through the keys using the fromIndex and limit
     for (let i = fromIndex; i < keys.length && i < fromIndex + limit; i++) {
         // get the token object from the keys
-        let jsonToken = internal_nft_token(contract, keys[i][0]);
+        let jsonToken = internalNftToken(contract, keys[i][0]);
         tokens.push(jsonToken);
     }
     return tokens;
 }
 
 //get the total supply of NFTs for a given owner
-export function internal_supply_for_owner(contract, accountId): number {
+export function internalSupplyForOwner(contract, accountId): number {
     //get the set of tokens for the passed in owner
     let tokens = restoreOwners(contract.tokensPerOwner.get(accountId));
     //if there isn't a set of tokens for the passed in account ID, we'll return 0
@@ -43,7 +43,7 @@ export function internal_supply_for_owner(contract, accountId): number {
 }
 
 //Query for all the tokens for an owner
-export function internal_tokens_for_owner(contract: Contract, accountId: string, fromIndex, limit): JsonToken[] {
+export function internalTokensForOwner(contract: Contract, accountId: string, fromIndex, limit): JsonToken[] {
     //get the set of tokens for the passed in owner
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
 
@@ -63,7 +63,7 @@ export function internal_tokens_for_owner(contract: Contract, accountId: string,
         if(i >= keys.length) {
             break;
         }
-        let token = internal_nft_token(contract, keys[i]);
+        let token = internalNftToken(contract, keys[i]);
         tokens.push(token);
     }
     return tokens;

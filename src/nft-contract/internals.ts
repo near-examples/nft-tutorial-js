@@ -1,15 +1,6 @@
-import { near, UnorderedSet, Vector } from "near-sdk-js";
+import { assert, near, UnorderedSet, Vector } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { Token } from "./metadata";
-
-// TODO: don't hard code storage byte cost
-export const storageCostPerByte = BigInt('10000000000000000000');
-
-export function assert(statement: boolean, message: string) {
-    if (!statement) {
-        throw Error(`Assertion failed: ${message}`)
-    }
-}
 
 // Magic 0.o
 export function restoreOwners(collection) {
@@ -20,21 +11,21 @@ export function restoreOwners(collection) {
 }
 
 //convert the royalty percentage and amount to pay into a payout (U128)
-export function royalty_to_payout(royaltyPercentage: number, amountToPay: bigint): string {
+export function royaltyToPayout(royaltyPercentage: number, amountToPay: bigint): string {
     return (BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)).toString();
 }
 
 //calculate how many bytes the account ID is taking up
-export function bytes_for_approved_account_id(accountId: string): number {
+export function bytesForApprovedAccountId(accountId: string): number {
     // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
     return accountId.length + 4 + 8;
 }
 
 //refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
-export function refund_approved_account_ids_iter(accountId: string, approvedAccountIds: string[]) {
+export function refundApprovedAccountIdsIter(accountId: string, approvedAccountIds: string[]) {
     //get the storage total by going through and summing all the bytes for each approved account IDs
-    let storageReleased = approvedAccountIds.map(e => bytes_for_approved_account_id(e)).reduce((partialSum, a) => partialSum + a, 0);
-    let amountToTransfer = BigInt(storageReleased) * storageCostPerByte;
+    let storageReleased = approvedAccountIds.map(e => bytesForApprovedAccountId(e)).reduce((partialSum, a) => partialSum + a, 0);
+    let amountToTransfer = BigInt(storageReleased) * near.storageByteCost().valueOf();
     
     // Send the money to the beneficiary (TODO: don't use batch actions)
     const promise = near.promiseBatchCreate(accountId);
@@ -42,15 +33,15 @@ export function refund_approved_account_ids_iter(accountId: string, approvedAcco
 }
 
 //refund a map of approved account IDs and send the funds to the passed in account ID
-export function refund_approved_account_ids(accountId: string, approvedAccountIds: { [key: string]: number }) {
-    //call the refund_approved_account_ids_iter with the approved account IDs as keys
-    refund_approved_account_ids_iter(accountId, Object.keys(approvedAccountIds));
+export function refundApprovedAccountIds(accountId: string, approvedAccountIds: { [key: string]: number }) {
+    //call the refundApprovedAccountIdsIter with the approved account IDs as keys
+    refundApprovedAccountIdsIter(accountId, Object.keys(approvedAccountIds));
 }
 
 //refund the initial deposit based on the amount of storage that was used up
 export function refundDeposit(storageUsed: bigint) {
     //get how much it would cost to store the information
-    let requiredCost = storageUsed * storageCostPerByte
+    let requiredCost = storageUsed * near.storageByteCost().valueOf()
     //get the attached deposit
     let attachedDeposit = near.attachedDeposit().valueOf();
 
@@ -73,17 +64,17 @@ export function refundDeposit(storageUsed: bigint) {
 }
 
 //used to make sure the user attached exactly 1 yoctoNEAR
-export function assert_one_yocto() {
+export function assertOneYocto() {
     assert(near.attachedDeposit().toString() === "1", "Requires attached deposit of exactly 1 yoctoNEAR");
 }
 
 //Assert that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
-export function assert_at_least_one_yocto() {
+export function assertAtLeastOneYocto() {
     assert(near.attachedDeposit().valueOf() >= BigInt(1), "Requires attached deposit of at least 1 yoctoNEAR");
 }
 
 //add a token to the set of tokens an owner has
-export function internal_add_token_to_owner(contract: Contract, accountId: string, tokenId: string) {
+export function internalAddTokenToOwner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
     // Object.assign(new UnorderedSet(), tokenSet);
@@ -104,7 +95,7 @@ export function internal_add_token_to_owner(contract: Contract, accountId: strin
 }
 
 //remove a token from an owner (internal method and can't be called directly via CLI).
-export function internal_remove_token_from_owner(contract: Contract, accountId: string, tokenId: string) {
+export function internalRemoveTokenFromOwner(contract: Contract, accountId: string, tokenId: string) {
     //we get the set of tokens that the owner has
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
     //if there is no set of tokens for the owner, we panic with the following message:
@@ -124,7 +115,7 @@ export function internal_remove_token_from_owner(contract: Contract, accountId: 
 }
 
 //transfers the NFT to the receiver_id (internal method and can't be called directly via CLI).
-export function internal_transfer(contract: Contract, senderId: string, receiverId: string, tokenId: string, approvalId: number, memo: string): Token {
+export function internalTransfer(contract: Contract, senderId: string, receiverId: string, tokenId: string, approvalId: number, memo: string): Token {
     //get the token object by passing in the token_id
     let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
@@ -157,9 +148,9 @@ export function internal_transfer(contract: Contract, senderId: string, receiver
     assert(token.owner_id != receiverId, "The token owner and the receiver should be different")
 
     //we remove the token from it's current owner's set
-    internal_remove_token_from_owner(contract, token.owner_id, tokenId);
+    internalRemoveTokenFromOwner(contract, token.owner_id, tokenId);
     //we then add the token to the receiver_id's set
-    internal_add_token_to_owner(contract, receiverId, tokenId);
+    internalAddTokenToOwner(contract, receiverId, tokenId);
 
     //we create a new token struct 
     let newToken = new Token ({

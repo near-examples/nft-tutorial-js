@@ -1,9 +1,9 @@
-import { near } from "near-sdk-js";
+import { assert, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assert, internal_add_token_to_owner, refundDeposit } from "./internals";
+import { internalAddTokenToOwner, refundDeposit } from "./internals";
 import { Token, TokenMetadata } from "./metadata";
 
-export function internal_mint(
+export function internalMint(
     contract: Contract, 
     tokenId: string, 
     metadata: TokenMetadata, 
@@ -49,7 +49,7 @@ export function internal_mint(
     near.log('contract.tokenMetadataById: ', contract.tokenMetadataById.toArray())
 
     //call the internal method for adding the token to the owner
-    internal_add_token_to_owner(contract, token.owner_id, tokenId)
+    internalAddTokenToOwner(contract, token.owner_id, tokenId)
     
     // Construct the mint log as per the events standard.
     let nftMintLog = {

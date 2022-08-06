@@ -1,13 +1,13 @@
-import { bytes, near } from "near-sdk-js";
+import { assert, bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assert, assert_one_yocto, internal_add_token_to_owner, internal_remove_token_from_owner, internal_transfer, refundDeposit, refund_approved_account_ids } from "./internals";
+import { assertOneYocto, internalAddTokenToOwner, internalRemoveTokenFromOwner, internalTransfer, refundDeposit, refundApprovedAccountIds } from "./internals";
 import { JsonToken, Token, TokenMetadata } from "./metadata";
 
 const GAS_FOR_RESOLVE_TRANSFER = 40_000_000_000_000;
 const GAS_FOR_NFT_ON_TRANSFER = 35_000_000_000_000;
 
 //get the information for a specific token ID
-export function internal_nft_token(
+export function internalNftToken(
     contract: Contract, 
     tokenId: string, 
 ) {
@@ -33,7 +33,7 @@ export function internal_nft_token(
 }
 
 //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver. 
-export function internal_nft_transfer(
+export function internalNftTransfer(
     contract: Contract,
     receiverId: string, 
     tokenId: string, 
@@ -41,12 +41,12 @@ export function internal_nft_transfer(
     memo: string
 ) {
     //assert that the user attached exactly 1 yoctoNEAR. This is for security and so that the user will be redirected to the NEAR wallet. 
-    assert_one_yocto();
+    assertOneYocto();
     //get the sender to transfer the token from the sender to the receiver
     let senderId = near.predecessorAccountId();
 
     //call the internal transfer method and get back the previous token so we can refund the approved account IDs
-    let previousToken = internal_transfer(
+    let previousToken = internalTransfer(
         contract,
         senderId,
         receiverId,
@@ -56,14 +56,14 @@ export function internal_nft_transfer(
     );
 
     //we refund the owner for releasing the storage used up by the approved account IDs
-    refund_approved_account_ids(
+    refundApprovedAccountIds(
         previousToken.owner_id,
         previousToken.approved_account_ids
     );
 }
 
 //implementation of the transfer call method. This will transfer the NFT and call a method on the receiver_id contract
-export function internal_nft_transfer_call(
+export function internalNftTransferCall(
     contract: Contract,
     receiverId: string, 
     tokenId: string, 
@@ -72,12 +72,12 @@ export function internal_nft_transfer_call(
     msg: string
 ) {
     //assert that the user attached exactly 1 yocto for security reasons. 
-    assert_one_yocto();
+    assertOneYocto();
     //get the sender to transfer the token from the sender to the receiver
     let senderId = near.predecessorAccountId();
 
     //call the internal transfer method and get back the previous token so we can refund the approved account IDs
-    let previousToken = internal_transfer(
+    let previousToken = internalTransfer(
         contract,
         senderId,
         receiverId,
@@ -129,7 +129,7 @@ export function internal_nft_transfer_call(
 
 //resolves the cross contract call when calling nft_on_transfer in the nft_transfer_call method
 //returns true if the token was successfully transferred to the receiver_id
-export function internal_resolve_transfer(
+export function internalResolveTransfer(
     contract: Contract,
     authorizedId: string,
     ownerId: string,
@@ -151,7 +151,7 @@ export function internal_resolve_transfer(
                 revert the original transfer and thus we can just return true since nothing went wrong.
             */
             //we refund the owner for releasing the storage used up by the approved account IDs
-            refund_approved_account_ids(ownerId, approvedAccountIds);
+            refundApprovedAccountIds(ownerId, approvedAccountIds);
             return true;
         }
     }
@@ -161,27 +161,27 @@ export function internal_resolve_transfer(
     if (token != null) {
         if (token.owner_id != receiverId) {
             //we refund the owner for releasing the storage used up by the approved account IDs
-            refund_approved_account_ids(ownerId, approvedAccountIds);
+            refundApprovedAccountIds(ownerId, approvedAccountIds);
             // The token is not owner by the receiver anymore. Can't return it.
             return true;
         }
     //if there isn't a token object, it was burned and so we return true
     } else {
         //we refund the owner for releasing the storage used up by the approved account IDs
-        refund_approved_account_ids(ownerId, approvedAccountIds);
+        refundApprovedAccountIds(ownerId, approvedAccountIds);
         return true;
     }
 
     //we remove the token from the receiver
-    internal_remove_token_from_owner(contract, receiverId, tokenId);
+    internalRemoveTokenFromOwner(contract, receiverId, tokenId);
     //we add the token to the original owner
-    internal_add_token_to_owner(contract, ownerId, tokenId);
+    internalAddTokenToOwner(contract, ownerId, tokenId);
 
     //we change the token struct's owner to be the original owner 
     token.owner_id = ownerId
 
     //we refund the receiver any approved account IDs that they may have set on the token
-    refund_approved_account_ids(receiverId, token.approved_account_ids);
+    refundApprovedAccountIds(receiverId, token.approved_account_ids);
     //reset the approved account IDs to what they were before the transfer
     token.approved_account_ids = approvedAccountIds;
 

@@ -1,12 +1,12 @@
-import { bytes, near } from "near-sdk-js";
+import { assert, bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assert, assert_at_least_one_yocto, assert_one_yocto, bytes_for_approved_account_id, internal_add_token_to_owner, refundDeposit, refund_approved_account_ids, refund_approved_account_ids_iter } from "./internals";
+import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter } from "./internals";
 import { Token } from "./metadata";
 
 const GAS_FOR_NFT_ON_APPROVE = 35_000_000_000_000;
 
 //approve an account ID to transfer a token on your behalf
-export function internal_nft_approve(
+export function internalNftApprove(
     contract: Contract, 
     tokenId: string, 
     accountId: string, 
@@ -16,7 +16,7 @@ export function internal_nft_approve(
         assert at least one yocto for security reasons - this will cause a redirect to the NEAR wallet.
         The user needs to attach enough to pay for storage on the contract
     */
-    assert_at_least_one_yocto();
+    assertAtLeastOneYocto();
 
     //get the token object from the token ID
     let token = contract.tokensById.get(tokenId) as Token;
@@ -34,7 +34,7 @@ export function internal_nft_approve(
     token.approved_account_ids[accountId] = approvalId;
 
     //if it was a new approval, we need to calculate how much storage is being used to add the account.
-    let storageUsed = isNewApproval ? bytes_for_approved_account_id(accountId) : 0;
+    let storageUsed = isNewApproval ? bytesForApprovedAccountId(accountId) : 0;
 
     //increment the token's next approval ID by 1
     token.next_approval_id += 1;
@@ -67,7 +67,7 @@ export function internal_nft_approve(
 }
 
 //check if the passed in account has access to approve the token ID
-export function internal_nft_is_approved(
+export function internalNftIsApproved(
     contract: Contract, 
     tokenId: string, 
     approvedAccountId: string, 
@@ -99,13 +99,13 @@ export function internal_nft_is_approved(
 }
 
 //revoke a specific account from transferring the token on your behalf
-export function internal_nft_revoke(
+export function internalNftRevoke(
     contract: Contract, 
     tokenId: string, 
     accountId: string
 ) {
     //assert that the user attached exactly 1 yoctoNEAR for security reasons
-    assert_one_yocto();
+    assertOneYocto();
 
     //get the token object using the passed in token_id
     let token = contract.tokensById.get(tokenId) as Token;
@@ -122,7 +122,7 @@ export function internal_nft_revoke(
         delete token.approved_account_ids[accountId];
         
         //refund the funds released by removing the approved_account_id to the caller of the function
-        refund_approved_account_ids_iter(predecessorAccountId, [accountId]);
+        refundApprovedAccountIdsIter(predecessorAccountId, [accountId]);
         
         //insert the token back into the tokens_by_id collection with the account_id removed from the approval list
         contract.tokensById.set(tokenId, token);
@@ -130,12 +130,12 @@ export function internal_nft_revoke(
 }
 
 //revoke all accounts from transferring the token on your behalf
-export function internal_nft_revoke_all(
+export function internalNftRevokeAll(
     contract: Contract, 
     tokenId: string
 ) {
     //assert that the caller attached exactly 1 yoctoNEAR for security
-    assert_one_yocto();
+    assertOneYocto();
 
     //get the token object from the passed in token ID
     let token = contract.tokensById.get(tokenId) as Token;
@@ -150,7 +150,7 @@ export function internal_nft_revoke_all(
     //only revoke if the approved account IDs for the token is not empty
     if (token.approved_account_ids && Object.keys(token.approved_account_ids).length === 0 && Object.getPrototypeOf(token.approved_account_ids) === Object.prototype) {
         //refund the approved account IDs to the caller of the function
-        refund_approved_account_ids(predecessorAccountId, token.approved_account_ids);
+        refundApprovedAccountIds(predecessorAccountId, token.approved_account_ids);
         //clear the approved account IDs
         token.approved_account_ids = {};
         //insert the token back into the tokens_by_id collection with the approved account IDs cleared
