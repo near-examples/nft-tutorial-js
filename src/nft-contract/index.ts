@@ -1,9 +1,10 @@
+// @ts-nocheck
 import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet } from 'near-sdk-js'
 import { NFTContractMetadata, Token, TokenMetadata, internal_nft_metadata } from './metadata';
 import { internalMint } from './mint';
 import { internalNftTokens, internalSupplyForOwner, internalTokensForOwner, internalTotalSupply } from './enumeration';
 import { internalNftToken, internalNftTransfer, internalNftTransferCall, internalResolveTransfer } from './nft_core';
-import { internalNftApprove, internalNftIsApproved, internalNftRevoke, internalNftRevokeAll } from './approvals';
+import { internalNftApprove, internalNftIsApproved, internalNftRevoke, internalNftRevokeAll } from './approval';
 import { internalNftPayout, internalNftTransferPayout } from './royalty';
 
 /// This spec can be treated like a version of the standard.

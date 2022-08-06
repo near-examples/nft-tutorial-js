@@ -1,5 +1,5 @@
 import { NearContract, NearBindgen, near, call, view, LookupMap, UnorderedMap, Vector, UnorderedSet, assert } from 'near-sdk-js'
-import { assertOneYocto, restoreOwners } from '../nft-contract/internals';
+import { assertOneYocto, restoreOwners } from './internals';
 import { internalNftOnApprove } from './nft_callbacks';
 import { internalOffer, internalRemoveSale, internalResolvePurchase, internalUpdatePrice, Sale } from './sale';
 import { internalGetSale, internalSalesByNftContractId, internalSalesByOwnerId, internalSupplyByNftContractId, internalSupplyByOwnerId, internalSupplySales } from './sale_views';
