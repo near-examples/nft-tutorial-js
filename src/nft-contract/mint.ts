@@ -15,7 +15,7 @@ export function internalMint({
     tokenId: string, 
     metadata: TokenMetadata, 
     receiverId: string 
-    perpetualRoyalties: {[key: string]: string}
+    perpetualRoyalties: {[key: string]: number}
 }): void {
     //measure the initial storage being used on the contract TODO
     let initialStorageUsage = near.storageUsage();
