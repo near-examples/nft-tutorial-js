@@ -1,15 +1,22 @@
+// @ts-nocheck
 import { assert, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { internalAddTokenToOwner, refundDeposit } from "./internals";
+import { internalAddTokenToOwner, refundDeposit } from "./internal";
 import { Token, TokenMetadata } from "./metadata";
 
-export function internalMint(
+export function internalMint({
+    contract,
+    tokenId,
+    metadata,
+    receiverId,
+    perpetualRoyalties
+}:{ 
     contract: Contract, 
     tokenId: string, 
     metadata: TokenMetadata, 
-    receiverId: string, 
-    perpetualRoyalties: { [accountId: string]: number }
-) {
+    receiverId: string 
+    perpetualRoyalties: {[key: string]: number}
+}): void {
     //measure the initial storage being used on the contract TODO
     let initialStorageUsage = near.storageUsage();
 
@@ -39,18 +46,16 @@ export function internalMint(
         royalty,
     });
 
-    
     //insert the token ID and token struct and make sure that the token doesn't exist
     assert(!contract.tokensById.containsKey(tokenId), "Token already exists");
     contract.tokensById.set(tokenId, token)
-    
+
     //insert the token ID and metadata
     contract.tokenMetadataById.set(tokenId, metadata);
-    near.log('contract.tokenMetadataById: ', contract.tokenMetadataById.toArray())
 
     //call the internal method for adding the token to the owner
     internalAddTokenToOwner(contract, token.owner_id, tokenId)
-    
+
     // Construct the mint log as per the events standard.
     let nftMintLog = {
         // Standard name ("nep171").

@@ -1,6 +1,6 @@
 import { assert, bytes, near } from "near-sdk-js";
 import { Contract, DELIMETER } from ".";
-import { assertOneYocto, internallyRemoveSale } from "./internals";
+import { assertOneYocto, internallyRemoveSale } from "./internal";
 
 //GAS constants to attach to calls
 const GAS_FOR_ROYALTIES = 115_000_000_000_000;
@@ -42,12 +42,20 @@ export class Sale {
 }
 
 //removes a sale from the market. 
-export function internalRemoveSale(contract: Contract, nftContactId: string, tokenId: string) {
+export function internalRemoveSale({
+    contract,
+    nftContractId,
+    tokenId
+}:{ 
+    contract: Contract, 
+    nftContractId: string, 
+    tokenId: string 
+}) {
     //assert that the user has attached exactly 1 yoctoNEAR (for security reasons)
     assertOneYocto();
     
     //get the sale object as the return value from removing the sale internally
-    let sale = internallyRemoveSale(contract, nftContactId, tokenId);
+    let sale = internallyRemoveSale(contract, nftContractId, tokenId);
 
     //get the predecessor of the call and make sure they're the owner of the sale
     let ownerId = near.predecessorAccountId();
@@ -57,12 +65,22 @@ export function internalRemoveSale(contract: Contract, nftContactId: string, tok
 }
 
 //updates the price for a sale on the market
-export function internalUpdatePrice(contract: Contract, nftContactId: string, tokenId: string, price: string) {
+export function internalUpdatePrice({
+    contract,
+    nftContractId,
+    tokenId,
+    price
+}:{ 
+    contract: Contract, 
+    nftContractId: string, 
+    tokenId: string, 
+    price: string 
+}) {
     //assert that the user has attached exactly 1 yoctoNEAR (for security reasons)
     assertOneYocto();
 
     //create the unique sale ID from the nft contract and token
-    let contractAndTokenId = `${nftContactId}${DELIMETER}${tokenId}`;
+    let contractAndTokenId = `${nftContractId}${DELIMETER}${tokenId}`;
 
     //get the sale object from the unique sale ID. If there is no token, panic. 
     let sale = contract.sales.get(contractAndTokenId) as Sale;
@@ -78,13 +96,21 @@ export function internalUpdatePrice(contract: Contract, nftContactId: string, to
 }
 
 //place an offer on a specific sale. The sale will go through as long as your deposit is greater than or equal to the list price
-export function internalOffer(contract: Contract, nftContactId: string, tokenId: string) {
+export function internalOffer({
+    contract,
+    nftContractId,
+    tokenId
+}:{
+    contract: Contract, 
+    nftContractId: string, 
+    tokenId: string
+}) {
     //get the attached deposit and make sure it's greater than 0
     let deposit = near.attachedDeposit().valueOf();
     assert(deposit > 0, "deposit must be greater than 0");
  
     //get the unique sale ID (contract + DELIMITER + token ID)
-    let contractAndTokenId = `${nftContactId}${DELIMETER}${tokenId}`;
+    let contractAndTokenId = `${nftContractId}${DELIMETER}${tokenId}`;
     //get the sale object from the unique sale ID. If the sale doesn't exist, panic.
     let sale = contract.sales.get(contractAndTokenId) as Sale;
     if (sale == null) {
@@ -101,18 +127,30 @@ export function internalOffer(contract: Contract, nftContactId: string, tokenId:
     assert(deposit >= price, "deposit must be greater than or equal to price");
     
     //process the purchase (which will remove the sale, transfer and get the payout from the nft contract, and then distribute royalties) 
-    processPurchase(contract, nftContactId, tokenId, deposit.toString(), buyerId);
+    processPurchase({contract, nftContractId, tokenId, price: deposit.toString(), buyerId});
 }
 
 //private function used when a sale is purchased. 
 //this will remove the sale, transfer and get the payout from the nft contract, and then distribute royalties
-export function processPurchase(contract: Contract, nftContactId: string, tokenId: string, price: string, buyerId: string) {
+export function processPurchase({
+    contract,
+    nftContractId,
+    tokenId,
+    price,
+    buyerId
+}:{
+    contract: Contract, 
+    nftContractId: string, 
+    tokenId: string, 
+    price: string, 
+    buyerId: string
+}) {
     //get the sale object by removing the sale
-    let sale = internallyRemoveSale(contract, nftContactId, tokenId);
+    let sale = internallyRemoveSale(contract, nftContractId, tokenId);
 
     //initiate a cross contract call to the nft contract. This will transfer the token to the buyer and return
     //a payout object used for the market to distribute funds to the appropriate accounts.
-    const promise = near.promiseBatchCreate(nftContactId);
+    const promise = near.promiseBatchCreate(nftContractId);
     near.promiseBatchActionFunctionCall(
         promise, 
         "nft_transfer_payout", 
@@ -153,10 +191,13 @@ export function processPurchase(contract: Contract, nftContactId: string, tokenI
     check to see if it's authentic and there's no problems. If everything is fine, it will pay the accounts. If there's a problem,
     it will refund the buyer for the price. 
 */
-export function internalResolvePurchase(
-    buyerId: string,
+export function internalResolvePurchase({
+    buyerId,
+    price
+}:{
+    buyerId: string, 
     price: string
-) {
+}) {
     assert(near.currentAccountId() === near.predecessorAccountId(), "Only the contract itself can call this method");
 
     // checking for payout information returned from the nft_transfer_payout method

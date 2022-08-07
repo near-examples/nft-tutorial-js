@@ -59,4 +59,3 @@ export function internallyRemoveSale(contract: Contract, nftContractId: string, 
     //return the sale object
     return sale;
 }
-

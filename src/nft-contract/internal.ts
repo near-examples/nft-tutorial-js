@@ -2,7 +2,7 @@ import { assert, near, UnorderedSet, Vector } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { Token } from "./metadata";
 
-// Magic 0.o
+// Gets a collection and deserializes it into a set that can be used.
 export function restoreOwners(collection) {
     if (collection == null) {
         return null;
@@ -13,12 +13,6 @@ export function restoreOwners(collection) {
 //convert the royalty percentage and amount to pay into a payout (U128)
 export function royaltyToPayout(royaltyPercentage: number, amountToPay: bigint): string {
     return (BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)).toString();
-}
-
-//calculate how many bytes the account ID is taking up
-export function bytesForApprovedAccountId(accountId: string): number {
-    // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
-    return accountId.length + 4 + 8;
 }
 
 //refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
@@ -63,9 +57,10 @@ export function refundDeposit(storageUsed: bigint) {
     }
 }
 
-//used to make sure the user attached exactly 1 yoctoNEAR
-export function assertOneYocto() {
-    assert(near.attachedDeposit().toString() === "1", "Requires attached deposit of exactly 1 yoctoNEAR");
+//calculate how many bytes the account ID is taking up
+export function bytesForApprovedAccountId(accountId: string): number {
+    // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
+    return accountId.length + 4 + 8;
 }
 
 //Assert that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
@@ -73,22 +68,23 @@ export function assertAtLeastOneYocto() {
     assert(near.attachedDeposit().valueOf() >= BigInt(1), "Requires attached deposit of at least 1 yoctoNEAR");
 }
 
+//used to make sure the user attached exactly 1 yoctoNEAR
+export function assertOneYocto() {
+    assert(near.attachedDeposit().toString() === "1", "Requires attached deposit of exactly 1 yoctoNEAR");
+}
+
 //add a token to the set of tokens an owner has
 export function internalAddTokenToOwner(contract: Contract, accountId: string, tokenId: string) {
     //get the set of tokens for the given account
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
-    // Object.assign(new UnorderedSet(), tokenSet);
-    near.log('tokenSet: ', tokenSet)
 
     if(tokenSet == null) {
         //if the account doesn't have any tokens, we create a new unordered set
         tokenSet = new UnorderedSet("tokensPerOwner" + accountId.toString());
-        near.log('tokenSet after default: ', tokenSet.toArray())
     }
 
     //we insert the token ID into the set
     tokenSet.set(tokenId);
-    near.log('tokenSet after set: ', tokenSet.toArray())
 
     //we insert that set for the given account ID. 
     contract.tokensPerOwner.set(accountId, tokenSet);
@@ -125,7 +121,6 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
     //if the sender doesn't equal the owner, we check if the sender is in the approval list
     if (senderId != token.owner_id) {
         //if the token's approved account IDs doesn't contain the sender, we panic
-        near.log(`token: ${JSON.stringify(token)}`)
         if (!token.approved_account_ids.hasOwnProperty(senderId)) {
             near.panic("Unauthorized");
         }

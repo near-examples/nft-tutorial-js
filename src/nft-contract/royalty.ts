@@ -1,15 +1,21 @@
+// @ts-nocheck
 import { assert, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, internalTransfer, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter, royaltyToPayout } from "./internals";
+import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, internalTransfer, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter, royaltyToPayout } from "./internal";
 import { Token } from "./metadata";
 
 //calculates the payout for a token given the passed in balance. This is a view method
-export function internalNftPayout(
+export function internalNftPayout({
+    contract,
+    tokenId,
+    balance,
+    maxLenPayout
+}:{
     contract: Contract, 
     tokenId: string,
     balance: bigint, 
     maxLenPayout: number,
-    ): { payout: {[key: string]: string }} {
+}): { payout: {[key: string]: string }} {
     //get the token object
     let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
@@ -47,7 +53,15 @@ export function internalNftPayout(
 }
 
 //transfers the token to the receiver ID and returns the payout object that should be payed given the passed in balance. 
-export function internalNftTransferPayout(
+export function internalNftTransferPayout({
+    contract,
+    receiverId,
+    tokenId,
+    approvalId,
+    memo,
+    balance,
+    maxLenPayout
+}:{
     contract: Contract, 
     receiverId: string, 
     tokenId: string,
@@ -55,13 +69,13 @@ export function internalNftTransferPayout(
     memo: string,
     balance: bigint,
     maxLenPayout: number,
-    ): { payout: {[key: string]: string }} {
+}): { payout: {[key: string]: string }} {
     //assert that the user attached 1 yocto NEAR for security reasons
     assertOneYocto();
     //get the sender ID
     let senderId = near.predecessorAccountId();
     //transfer the token to the passed in receiver and get the previous token object back
-    let previousToken = internalTransfer(
+    let previousToken: Token = internalTransfer(
         contract,
         senderId,
         receiverId,

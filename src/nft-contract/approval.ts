@@ -1,17 +1,23 @@
+// @ts-nocheck
 import { assert, bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
-import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter } from "./internals";
+import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter } from "./internal";
 import { Token } from "./metadata";
 
 const GAS_FOR_NFT_ON_APPROVE = 35_000_000_000_000;
 
 //approve an account ID to transfer a token on your behalf
-export function internalNftApprove(
+export function internalNftApprove({
+    contract,
+    tokenId,
+    accountId,
+    msg
+}:{ 
     contract: Contract, 
     tokenId: string, 
     accountId: string, 
-    msg: string
-) {
+    msg: string 
+}) {
     /*
         assert at least one yocto for security reasons - this will cause a redirect to the NEAR wallet.
         The user needs to attach enough to pay for storage on the contract
@@ -67,12 +73,17 @@ export function internalNftApprove(
 }
 
 //check if the passed in account has access to approve the token ID
-export function internalNftIsApproved(
+export function internalNftIsApproved({
+    contract,
+    tokenId,
+    approvedAccountId,
+    approvalId
+}:{ 
     contract: Contract, 
-    tokenId: string, 
+    tokenId: string,
     approvedAccountId: string, 
-    approvalId: number
-) {
+    approvalId: number 
+}) {
     //get the token object from the token_id
     let token = contract.tokensById.get(tokenId) as Token;
     if (token == null) {
@@ -99,11 +110,15 @@ export function internalNftIsApproved(
 }
 
 //revoke a specific account from transferring the token on your behalf
-export function internalNftRevoke(
+export function internalNftRevoke({
+    contract,
+    tokenId,
+    accountId
+}:{ 
     contract: Contract, 
     tokenId: string, 
-    accountId: string
-) {
+    accountId: string 
+}) {
     //assert that the user attached exactly 1 yoctoNEAR for security reasons
     assertOneYocto();
 
@@ -130,10 +145,13 @@ export function internalNftRevoke(
 }
 
 //revoke all accounts from transferring the token on your behalf
-export function internalNftRevokeAll(
+export function internalNftRevokeAll({
+    contract,
+    tokenId
+}:{ 
     contract: Contract, 
-    tokenId: string
-) {
+    tokenId: string 
+}) {
     //assert that the caller attached exactly 1 yoctoNEAR for security
     assertOneYocto();
 
