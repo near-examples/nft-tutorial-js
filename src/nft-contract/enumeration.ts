@@ -75,7 +75,7 @@ export function internalTokensForOwner({
         if(i >= keys.length) {
             break;
         }
-        let token = internalNftToken(contract, keys[i]);
+        let token = internalNftToken({contract, tokenId: keys[i]});
         tokens.push(token);
     }
     return tokens;
