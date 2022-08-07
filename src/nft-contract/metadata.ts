@@ -141,6 +141,10 @@ export class JsonToken {
 }
 
 //get the information for a specific token ID
-export function internalNftMetadata(contract: Contract): NFTContractMetadata {
+export function internalNftMetadata({
+    contract
+}:{
+    contract: Contract
+}): NFTContractMetadata {
     return contract.metadata;
 }
