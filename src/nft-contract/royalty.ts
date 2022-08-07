@@ -5,19 +5,32 @@ import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, inter
 import { Token } from "./metadata";
 
 //calculates the payout for a token given the passed in balance. This is a view method
-export function internalNftPayout(
+export function internalNftPayout({
+    contract,
+    tokenId,
+    balance,
+    maxLenPayout
+}:{
     contract: Contract, 
     tokenId: string,
     balance: bigint, 
     maxLenPayout: number,
-): { payout: {[key: string]: string }} {
+}): { payout: {[key: string]: string }} {
     /*
         FILL THIS IN
     */
 }
 
 //transfers the token to the receiver ID and returns the payout object that should be payed given the passed in balance. 
-export function internalNftTransferPayout(
+export function internalNftTransferPayout({
+    contract,
+    receiverId,
+    tokenId,
+    approvalId,
+    memo,
+    balance,
+    maxLenPayout
+}:{
     contract: Contract, 
     receiverId: string, 
     tokenId: string,
@@ -25,7 +38,7 @@ export function internalNftTransferPayout(
     memo: string,
     balance: bigint,
     maxLenPayout: number,
-): { payout: {[key: string]: string }} {
+}): { payout: {[key: string]: string }} {
     /*
         FILL THIS IN
     */
