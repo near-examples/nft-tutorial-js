@@ -23,7 +23,11 @@ export function internalMint({
     //specify the token struct that contains the owner ID 
     let token = new Token ({
         //set the owner ID equal to the receiver ID passed into the function
-        ownerId: receiverId
+        ownerId: receiverId,
+        //we set the approved account IDs to the default value (an empty map)
+        approvedAccountIds: {},
+        //the next approval ID is set to 0
+        nextApprovalId: 0
     });
 
     //insert the token ID and token struct and make sure that the token doesn't exist
