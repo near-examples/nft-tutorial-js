@@ -15,7 +15,7 @@ export function internalMint({
     tokenId: string, 
     metadata: TokenMetadata, 
     receiverId: string 
-    perpetualRoyalties: {[key: string]: string}
+    perpetualRoyalties: {[key: string]: number}
 }): void {
     /*
         FILL THIS IN
