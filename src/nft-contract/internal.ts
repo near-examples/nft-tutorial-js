@@ -165,6 +165,41 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
         near.log(`Memo: ${memo}`);
     }
 
+    // Default the authorized ID to be None for the logs.
+    let authorizedId;
+
+    //if the approval ID was provided, set the authorized ID equal to the sender
+    if (approvalId != null) {
+        authorizedId = senderId
+    }
+
+    // Construct the transfer log as per the events standard.
+    let nftTransferLog = {
+        // Standard name ("nep171").
+        standard: NFT_STANDARD_NAME,
+        // Version of the standard ("nft-1.0.0").
+        version: NFT_METADATA_SPEC,
+        // The data related with the event stored in a vector.
+        event: "nft_transfer",
+        data: [
+            {
+                // The optional authorized account ID to transfer the token on behalf of the old owner.
+                authorized_id: authorizedId,
+                // The old owner's account ID.
+                old_owner_id: token.owner_id,
+                // The account ID of the new owner of the token.
+                new_owner_id: receiverId,
+                // A vector containing the token IDs as strings.
+                token_ids: [tokenId],
+                // An optional memo to include.
+                memo,
+            }
+        ]
+    }
+
+    // Log the serialized json.
+    near.log(JSON.stringify(nftTransferLog));
+
     //return the previous token object that was transferred.
     return token
 }

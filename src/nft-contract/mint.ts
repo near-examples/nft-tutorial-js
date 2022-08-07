@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { assert, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { internalAddTokenToOwner, refundDeposit } from "./internal";
@@ -15,7 +14,7 @@ export function internalMint({
     tokenId: string, 
     metadata: TokenMetadata, 
     receiverId: string 
-    perpetualRoyalties: {[key: string]: string}
+    perpetualRoyalties: {[key: string]: number}
 }): void {
     //measure the initial storage being used on the contract TODO
     let initialStorageUsage = near.storageUsage();
@@ -55,6 +54,27 @@ export function internalMint({
 
     //call the internal method for adding the token to the owner
     internalAddTokenToOwner(contract, token.owner_id, tokenId)
+
+    // Construct the mint log as per the events standard.
+    let nftMintLog = {
+        // Standard name ("nep171").
+        standard: NFT_STANDARD_NAME,
+        // Version of the standard ("nft-1.0.0").
+        version: NFT_METADATA_SPEC,
+        // The data related with the event stored in a vector.
+        event: "nft_mint",
+        data: [
+            {
+                // Owner of the token.
+                owner_id: token.owner_id,
+                // Vector of token IDs that were minted.
+                token_ids: [tokenId],
+            }
+        ]
+    }
+    
+    // Log the json.
+    near.log(`EVENT_JSON:${JSON.stringify(nftMintLog)}`);
 
     //calculate the required storage which was the used - initial TODO
     let requiredStorageInBytes = near.storageUsage().valueOf() - initialStorageUsage.valueOf();

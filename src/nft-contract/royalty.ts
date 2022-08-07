@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { assert, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assertAtLeastOneYocto, assertOneYocto, bytesForApprovedAccountId, internalAddTokenToOwner, internalTransfer, refundDeposit, refundApprovedAccountIds, refundApprovedAccountIdsIter, royaltyToPayout } from "./internal";
@@ -75,7 +74,7 @@ export function internalNftTransferPayout({
     //get the sender ID
     let senderId = near.predecessorAccountId();
     //transfer the token to the passed in receiver and get the previous token object back
-    let previousToken = internalTransfer(
+    let previousToken: Token = internalTransfer(
         contract,
         senderId,
         receiverId,

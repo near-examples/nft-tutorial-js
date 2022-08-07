@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { assert, bytes, near } from "near-sdk-js";
 import { Contract, NFT_METADATA_SPEC, NFT_STANDARD_NAME } from ".";
 import { assertOneYocto, internalAddTokenToOwner, internalRemoveTokenFromOwner, internalTransfer, refundDeposit, refundApprovedAccountIds } from "./internal";
@@ -203,6 +202,39 @@ export function internalResolveTransfer({
 
     //we inset the token b  ack into the tokens_by_id collection
     contract.tokensById.set(tokenId, token);
+
+    /*
+        We need to log that the NFT was reverted back to the original owner.
+        The old_owner_id will be the receiver and the new_owner_id will be the
+        original owner of the token since we're reverting the transfer.
+    */
+
+    // Construct the transfer log as per the events standard.
+    let nftTransferLog = {
+        // Standard name ("nep171").
+        standard: NFT_STANDARD_NAME,
+        // Version of the standard ("nft-1.0.0").
+        version: NFT_METADATA_SPEC,
+        // The data related with the event stored in a vector.
+        event: "nft_transfer",
+        data: [
+            {
+                // The optional authorized account ID to transfer the token on behalf of the old owner.
+                authorized_id: authorizedId,
+                // The old owner's account ID.
+                old_owner_id: receiverId,
+                // The account ID of the new owner of the token.
+                new_owner_id: ownerId,
+                // A vector containing the token IDs as strings.
+                token_ids: [tokenId],
+                // An optional memo to include.
+                memo,
+            }
+        ]
+    }
+
+    // Log the serialized json.
+    near.log(JSON.stringify(nftTransferLog));
 
     //return false
     return false
