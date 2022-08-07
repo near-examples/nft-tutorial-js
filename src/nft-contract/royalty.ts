@@ -75,7 +75,7 @@ export function internalNftTransferPayout({
     //get the sender ID
     let senderId = near.predecessorAccountId();
     //transfer the token to the passed in receiver and get the previous token object back
-    let previousToken = internalTransfer(
+    let previousToken: Token = internalTransfer(
         contract,
         senderId,
         receiverId,
