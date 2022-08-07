@@ -36,7 +36,7 @@ export function internalNftTokens({
     // Paginate through the keys using the fromIndex and limit
     for (let i = start; i < keys.length && i < start + max; i++) {
         // get the token object from the keys
-        let jsonToken = internalNftToken(contract, keys[i][0]);
+        let jsonToken = internalNftToken({contract, tokenId: keys[i][0]});
         tokens.push(jsonToken);
     }
     return tokens;
@@ -92,7 +92,7 @@ export function internalTokensForOwner({
         if(i >= keys.length) {
             break;
         }
-        let token = internalNftToken(contract, keys[i]);
+        let token = internalNftToken({contract, tokenId: keys[i]});
         tokens.push(token);
     }
     return tokens;
