@@ -30,7 +30,8 @@ export function internalNftToken({
         tokenId: tokenId,
         ownerId: token.owner_id,
         metadata,
-        approvedAccountIds: token.approved_account_ids
+        approvedAccountIds: token.approved_account_ids,
+        royalty: token.royalty
     });
     return jsonToken;
 }

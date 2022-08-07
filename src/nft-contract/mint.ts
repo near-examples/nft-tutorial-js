@@ -20,6 +20,20 @@ export function internalMint({
     //measure the initial storage being used on the contract TODO
     let initialStorageUsage = near.storageUsage();
 
+    // create a royalty map to store in the token
+    let royalty: { [accountId: string]: number } = {}
+
+    // if perpetual royalties were passed into the function: TODO: add isUndefined fn
+    if (perpetualRoyalties != null) {
+        //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
+        assert(Object.keys(perpetualRoyalties).length < 7, "Cannot add more than 6 perpetual royalty amounts");
+        
+        //iterate through the perpetual royalties and insert the account and amount in the royalty map
+        Object.entries(perpetualRoyalties).forEach(([account, amount], index) => {
+            royalty[account] = amount;
+        });
+    }
+
     //specify the token struct that contains the owner ID 
     let token = new Token ({
         //set the owner ID equal to the receiver ID passed into the function
@@ -27,7 +41,9 @@ export function internalMint({
         //we set the approved account IDs to the default value (an empty map)
         approvedAccountIds: {},
         //the next approval ID is set to 0
-        nextApprovalId: 0
+        nextApprovalId: 0,
+        //the map of perpetual royalties for the token (The owner will get 100% - total perpetual royalties)
+        royalty,
     });
 
     //insert the token ID and token struct and make sure that the token doesn't exist

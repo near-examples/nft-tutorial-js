@@ -10,6 +10,11 @@ export function restoreOwners(collection) {
     return UnorderedSet.deserialize(collection as UnorderedSet);
 }
 
+//convert the royalty percentage and amount to pay into a payout (U128)
+export function royaltyToPayout(royaltyPercentage: number, amountToPay: bigint): string {
+    return (BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)).toString();
+}
+
 //refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
 export function refundApprovedAccountIdsIter(accountId: string, approvedAccountIds: string[]) {
     //get the storage total by going through and summing all the bytes for each approved account IDs
@@ -148,6 +153,8 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
         //reset the approval account IDs
         approvedAccountIds: {},
         nextApprovalId: token.next_approval_id,
+        //we copy over the royalties from the previous token
+        royalty: token.royalty,
     });
 
     //insert that new token into the tokens_by_id, replacing the old entry 
