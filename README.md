@@ -1,45 +1,42 @@
 # NEAR NFT-Tutorial JavaScript Edition
 
-Welcome to NEAR's NFT tutorial, where we will help you parse the details around NEAR's [NEP-171 standard](https://nomicon.io/Standards/NonFungibleToken/Core.html) (Non-Fungible Token Standard), and show you how to build your own NFT smart contract from the ground up, improving your understanding about the NFT standard along the way. 
+Welcome to NEAR's NFT tutorial, where we will help you parse the details around NEAR's [NEP-171 standard](https://nomicon.io/Standards/NonFungibleToken/Core.html) (Non-Fungible Token Standard), and show you how to build your own NFT smart contract from the ground up, improving your understanding about the NFT standard along the way.
 
 ## Prerequisites
 
-* [Node.js](/develop/prerequisites#nodejs)
-* [NEAR Wallet Account](wallet.testnet.near.org)
-* [NEAR-CLI](https://docs.near.org/tools/near-cli#setup)
-* [yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable)
+- [Node.js](/develop/prerequisites#nodejs)
+- [NEAR Wallet Account](wallet.testnet.near.org)
+- [NEAR-CLI](https://docs.near.org/tools/near-cli#setup)
+- [yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable)
 
-## Tutorial Stages 
+## Tutorial Stages
 
-Each branch you will find in this repo corresponds to various stages of this tutorial with a partially completed contract at each stage. You are welcome to start from any stage you want to learn the most about. 
+Each branch you will find in this repo corresponds to various stages of this tutorial with a partially completed contract at each stage. You are welcome to start from any stage you want to learn the most about.
 
+| Branch        | Docs Tutorial                                                             | Description                                                                                                                                                                                                                                             |
+| ------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.skeleton    | [Contract Architecture](https://docs.near.org/tutorials/nfts/js/skeleton) | You'll learn the basic architecture of the NFT smart contract.                                                                                                                                                                                          |
+| 2.minting     | [Minting](https://docs.near.org/tutorials/nfts/js/minting)                | Here you'll flesh out the skeleton so the smart contract can mint a non-fungible token                                                                                                                                                                  |
+| 3.enumeration | [Enumeration](https://docs.near.org/tutorials/nfts/js/enumeration)        | Here you'll find different enumeration methods that can be used to return the smart contract's states.                                                                                                                                                  |
+| 4.core        | [Core](https://docs.near.org/tutorials/nfts/js/core)                      | In this tutorial you'll extend the NFT contract using the core standard, which will allow you to transfer non-fungible tokens.                                                                                                                          |
+| 5.approval    | [Approval](https://docs.near.org/tutorials/nfts/js/approvals)             | Here you'll expand the contract allowing other accounts to transfer NFTs on your behalf.                                                                                                                                                                |
+| 6.royalty     | [Royalty](https://docs.near.org/tutorials/nfts/js/royalty)                | Here you'll add the ability for non-fungible tokens to have royalties. This will allow people to get a percentage of the purchase price when an NFT is purchased.                                                                                       |
+| 7.events      | -----------                                                               | This allows indexers to know what functions are being called and make it easier and more reliable to keep track of information that can be used to populate the collectibles tab in the wallet for example. (tutorial docs have yet to be implemented ) |
+| 8.marketplace | -----------                                                               | -----------                                                                                                                                                                                                                                             |
 
+The tutorial series also contains a very helpful section on [**Upgrading Smart Contracts**](https://docs.near.org/tutorials/nfts/js/upgrade-contract). Definitely go and check it out as this is a common pain point.
 
-| Branch        | Docs Tutorial                                                                                    | Description |
-| ------------- | ------------------------------------------------------------------------------------------------ | ----------- |
-| 1.skeleton    | [Contract Architecture](https://docs.near.org/docs/tutorials/contracts/nfts/js/skeleton) | You'll learn the basic architecture of the NFT smart contract.            |
-| 2.minting     | [Minting](https://docs.near.org/docs/tutorials/contracts/nfts/js/minting)                |Here you'll flesh out the skeleton so the smart contract can mint a non-fungible token             |
-| 3.enumeration | [Enumeration](https://docs.near.org/docs/tutorials/contracts/nfts/js/enumeration)        |    Here you'll find different enumeration methods that can be used to return the smart contract's states.          |
-| 4.core        | [Core](https://docs.near.org/docs/tutorials/contracts/nfts/js/core)                      | In this tutorial you'll extend the NFT contract using the core standard, which will allow you to transfer non-fungible tokens.             |
-| 5.approval    | [Approval](https://docs.near.org/docs/tutorials/contracts/nfts/js/approvals)             | Here you'll expand the contract allowing other accounts to transfer NFTs on your behalf.            |
-| 6.royalty     | [Royalty](https://docs.near.org/docs/tutorials/contracts/nfts/js/royalty)                                                                                        |Here you'll add the ability for non-fungible tokens to have royalties. This will allow people to get a percentage of the purchase price when an NFT is purchased.             |
-| 7.events      | -----------                                                                                        |   This allows indexers to know what functions are being called and make it easier and more reliable to keep track of information that can be used to populate the collectibles tab in the wallet for example. (tutorial docs have yet to be implemented )          |
-| 8.marketplace | -----------                                                                                      | -----------             |
+# Quick-Start
 
-
-The tutorial series also contains a very helpful section on [**Upgrading Smart Contracts**](https://docs.near.org/docs/tutorials/contracts/nfts/js/upgrade-contract). Definitely go and check it out as this is a common pain point.
-
-# Quick-Start 
-
-If you want to see the full completed contract go ahead and clone and build this repo using 
+If you want to see the full completed contract go ahead and clone and build this repo using
 
 ```=bash
-git clone https://github.com/near-examples/nft-tutorial-js.git 
+git clone https://github.com/near-examples/nft-tutorial-js.git
 cd nft-tutorial-js
 yarn && yarn build
 ```
 
-Now that you've cloned and built the contract we can try a few things. 
+Now that you've cloned and built the contract we can try a few things.
 
 ## Mint An NFT
 
@@ -49,9 +46,9 @@ Once you've created your near wallet go ahead and login to your wallet with your
 near login
 ```
 
-Once your logged in you have to deploy the contract. Make a subaccount with the name of your choosing 
+Once your logged in you have to deploy the contract. Make a subaccount with the name of your choosing
 
-```=bash 
+```=bash
 near create-account nft-example.your-account.testnet --masterAccount your-account.testnet --initialBalance 10
 ```
 
@@ -64,19 +61,20 @@ MAIN_ACCOUNT=your-account.testnet
 ```
 
 Verify your new variable has the correct value
+
 ```=bash
 echo $NFT_CONTRACT_ID
 
 echo $MAIN_ACCOUNT
 ```
 
-
 ### Deploy Your Contract
+
 ```=bash
 near deploy --accountId $NFT_CONTRACT_ID --wasmFile build/nft.wasm
 ```
 
-### Initialize Your Contract 
+### Initialize Your Contract
 
 ```=bash
 near call $NFT_CONTRACT_ID init '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID
@@ -87,15 +85,14 @@ near call $NFT_CONTRACT_ID init '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId
 ```=bash
 near view $NFT_CONTRACT_ID nft_metadata
 ```
+
 ### Minting Token
 
 ```bash=
 near call $NFT_CONTRACT_ID nft_mint '{"token_id": "token-1", "metadata": {"title": "My Non Fungible Team Token", "description": "The Team Most Certainly Goes :)", "media": "https://bafybeiftczwrtyr3k7a2k4vutd3amkwsmaqyhrdzlhvpt33dyjivufqusq.ipfs.dweb.link/goteam-gif.gif"}, "receiver_id": "'$MAIN_ACCOUNT'"}' --accountId $MAIN_ACCOUNT --amount 0.1
 ```
 
-After you've minted the token go to wallet.testnet.near.org to `your-account.testnet` and look in the collections tab and check out your new sample NFT! 
-
-
+After you've minted the token go to wallet.testnet.near.org to `your-account.testnet` and look in the collections tab and check out your new sample NFT!
 
 ## View NFT Information
 
@@ -110,6 +107,7 @@ near view $NFT_CONTRACT_ID nft_token '{"token_id": "token-1"}'
 To transfer an NFT go ahead and make another [testnet wallet account](https://wallet.testnet.near.org).
 
 Then run the following
+
 ```bash=
 MAIN_ACCOUNT_2=your-second-wallet-account.testnet
 ```
