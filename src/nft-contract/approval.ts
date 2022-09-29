@@ -166,7 +166,7 @@ export function internalNftRevokeAll({
     assert(predecessorAccountId == token.owner_id, "only token owner can revoke");
 
     //only revoke if the approved account IDs for the token is not empty
-    if (token.approved_account_ids && Object.keys(token.approved_account_ids).length === 0 && Object.getPrototypeOf(token.approved_account_ids) === Object.prototype) {
+    if (token.approved_account_ids && Object.keys(token.approved_account_ids).length !== 0 && Object.getPrototypeOf(token.approved_account_ids) === Object.prototype) {
         //refund the approved account IDs to the caller of the function
         refundApprovedAccountIds(predecessorAccountId, token.approved_account_ids);
         //clear the approved account IDs
