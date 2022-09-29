@@ -63,7 +63,7 @@ export function internalRemoveTokenFromOwner(contract: Contract, accountId: stri
     let tokenSet = restoreOwners(contract.tokensPerOwner.get(accountId));
     //if there is no set of tokens for the owner, we panic with the following message:
     if (tokenSet == null) {
-        near.panic("Token should be owned by the sender");
+        near.panic("Account holds no tokens");
     }
 
     //we remove the the token_id from the set of tokens
