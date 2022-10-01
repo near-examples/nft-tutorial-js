@@ -152,6 +152,6 @@ export class Contract extends NearContract {
     @view
     //Query for all the tokens for an owner
     nft_metadata() {
-        return internalNftMetadata(this);
+        return internalNftMetadata({ contract: this });
     }
 }
