@@ -54,7 +54,7 @@ export function internalMint({
     contract.tokenMetadataById.set(tokenId, metadata);
 
     //call the internal method for adding the token to the owner
-    internalAddTokenToOwner(contract, token.owner_id, tokenId)
+    internalAddTokenToOwner(contract, token.ownerId, tokenId)
 
     // Construct the mint log as per the events standard.
     let nftMintLog = {
@@ -67,7 +67,7 @@ export function internalMint({
         data: [
             {
                 // Owner of the token.
-                owner_id: token.owner_id,
+                owner_id: token.ownerId,
                 // Vector of token IDs that were minted.
                 token_ids: [tokenId],
             }
