@@ -15,12 +15,12 @@ export function royaltyToPayout(royaltyPercentage: number, amountToPay: bigint):
     return (BigInt(royaltyPercentage) * BigInt(amountToPay) / BigInt(10000)).toString();
 }
 
-//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID. 
+//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID.
 export function refundApprovedAccountIdsIter(accountId: string, approvedAccountIds: string[]) {
     //get the storage total by going through and summing all the bytes for each approved account IDs
     let storageReleased = approvedAccountIds.map(e => bytesForApprovedAccountId(e)).reduce((partialSum, a) => partialSum + a, 0);
     let amountToTransfer = BigInt(storageReleased) * near.storageByteCost().valueOf();
-    
+
     // Send the money to the beneficiary (TODO: don't use batch actions)
     const promise = near.promiseBatchCreate(accountId);
     near.promiseBatchActionTransfer(promise, amountToTransfer)
@@ -86,7 +86,7 @@ export function internalAddTokenToOwner(contract: Contract, accountId: string, t
     //we insert the token ID into the set
     tokenSet.set(tokenId);
 
-    //we insert that set for the given account ID. 
+    //we insert that set for the given account ID.
     contract.tokensPerOwner.set(accountId, tokenSet);
 }
 
@@ -105,7 +105,7 @@ export function internalRemoveTokenFromOwner(contract: Contract, accountId: stri
     //if the token set is now empty, we remove the owner from the tokens_per_owner collection
     if (tokenSet.isEmpty()) {
         contract.tokensPerOwner.remove(accountId);
-    } else { //if the token set is not empty, we simply insert it back for the account ID. 
+    } else { //if the token set is not empty, we simply insert it back for the account ID.
         contract.tokensPerOwner.set(accountId, tokenSet);
     }
 }
@@ -147,7 +147,7 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
     //we then add the token to the receiver_id's set
     internalAddTokenToOwner(contract, receiverId, tokenId);
 
-    //we create a new token struct 
+    //we create a new token struct
     let newToken = new Token ({
         ownerId: receiverId,
         //reset the approval account IDs
@@ -157,10 +157,10 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
         royalty: token.royalty,
     });
 
-    //insert that new token into the tokens_by_id, replacing the old entry 
+    //insert that new token into the tokens_by_id, replacing the old entry
     contract.tokensById.set(tokenId, newToken);
 
-    //if there was some memo attached, we log it. 
+    //if there was some memo attached, we log it.
     if (memo != null) {
         near.log(`Memo: ${memo}`);
     }
@@ -198,7 +198,7 @@ export function internalTransfer(contract: Contract, senderId: string, receiverI
     }
 
     // Log the serialized json.
-    near.log(JSON.stringify(nftTransferLog));
+    near.log(`EVENT_JSON:${JSON.stringify(nftTransferLog)}`);
 
     //return the previous token object that was transferred.
     return token

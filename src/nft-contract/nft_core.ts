@@ -11,9 +11,9 @@ const GAS_FOR_NFT_ON_TRANSFER = 35_000_000_000_000;
 export function internalNftToken({
     contract,
     tokenId
-}:{ 
-    contract: Contract, 
-    tokenId: string 
+}:{
+    contract: Contract,
+    tokenId: string
 }) {
     let token = contract.tokensById.get(tokenId) as Token;
     //if there wasn't a token ID in the tokens_by_id collection, we return None
@@ -24,7 +24,7 @@ export function internalNftToken({
     //if there is some token ID in the tokens_by_id collection
     //we'll get the metadata for that token
     let metadata = contract.tokenMetadataById.get(tokenId) as TokenMetadata;
-    
+
     //we return the JsonToken
     let jsonToken = new JsonToken({
         tokenId: tokenId,
@@ -36,7 +36,7 @@ export function internalNftToken({
     return jsonToken;
 }
 
-//implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver. 
+//implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver.
 export function internalNftTransfer({
     contract,
     receiverId,
@@ -44,13 +44,13 @@ export function internalNftTransfer({
     approvalId,
     memo,
 }:{
-    contract: Contract, 
-    receiverId: string, 
-    tokenId: string, 
+    contract: Contract,
+    receiverId: string,
+    tokenId: string,
     approvalId: number
     memo: string
 }) {
-    //assert that the user attached exactly 1 yoctoNEAR. This is for security and so that the user will be redirected to the NEAR wallet. 
+    //assert that the user attached exactly 1 yoctoNEAR. This is for security and so that the user will be redirected to the NEAR wallet.
     assertOneYocto();
     //get the sender to transfer the token from the sender to the receiver
     let senderId = near.predecessorAccountId();
@@ -82,13 +82,13 @@ export function internalNftTransferCall({
     msg
 }:{
     contract: Contract,
-    receiverId: string, 
-    tokenId: string, 
+    receiverId: string,
+    tokenId: string,
     approvalId: number,
     memo: string,
-    msg: string  
+    msg: string
 }) {
-    //assert that the user attached exactly 1 yocto for security reasons. 
+    //assert that the user attached exactly 1 yocto for security reasons.
     assertOneYocto();
     //get the sender to transfer the token from the sender to the receiver
     let senderId = near.predecessorAccountId();
@@ -106,30 +106,30 @@ export function internalNftTransferCall({
     // Initiating receiver's call and the callback
     const promise = near.promiseBatchCreate(receiverId);
     near.promiseBatchActionFunctionCall(
-        promise, 
-        "nft_on_transfer", 
-        bytes(JSON.stringify({ 
+        promise,
+        "nft_on_transfer",
+        bytes(JSON.stringify({
             sender_id: senderId,
             previous_owner_id: previousToken.owner_id,
             token_id: tokenId,
             msg
-        })), 
-        0, // no deposit 
+        })),
+        0, // no deposit
         GAS_FOR_NFT_ON_TRANSFER
     );
 
     // We then resolve the promise and call nft_resolve_transfer on our own contract
     near.promiseThen(
-        promise, 
-        near.currentAccountId(), 
-        "nft_resolve_transfer", 
+        promise,
+        near.currentAccountId(),
+        "nft_resolve_transfer",
         bytes(JSON.stringify({
             owner_id: previousToken.owner_id,
             receiver_id: receiverId,
             token_id: tokenId,
             approved_account_ids: previousToken.approved_account_ids
-        })), 
-        0, // no deposit 
+        })),
+        0, // no deposit
         GAS_FOR_RESOLVE_TRANSFER
     );
     return near.promiseReturn(promise);
@@ -152,7 +152,7 @@ export function internalResolveTransfer({
     receiverId: string,
     tokenId: string,
     approvedAccountIds: { [key: string]: number },
-    memo: string    
+    memo: string
 }) {
     assert(near.currentAccountId() === near.predecessorAccountId(), "Only the contract itself can call this method");
     // Whether receiver wants to return token back to the sender, based on `nft_on_transfer`
@@ -162,8 +162,8 @@ export function internalResolveTransfer({
         //As per the standard, the nft_on_transfer should return whether we should return the token to it's owner or not
         //if we need don't need to return the token, we simply return true meaning everything went fine
         if (result === 'false') {
-            /* 
-                since we've already transferred the token and nft_on_transfer returned false, we don't have to 
+            /*
+                since we've already transferred the token and nft_on_transfer returned false, we don't have to
                 revert the original transfer and thus we can just return true since nothing went wrong.
             */
             //we refund the owner for releasing the storage used up by the approved account IDs
@@ -193,7 +193,7 @@ export function internalResolveTransfer({
     //we add the token to the original owner
     internalAddTokenToOwner(contract, ownerId, tokenId);
 
-    //we change the token struct's owner to be the original owner 
+    //we change the token struct's owner to be the original owner
     token.owner_id = ownerId
 
     //we refund the receiver any approved account IDs that they may have set on the token
@@ -235,7 +235,7 @@ export function internalResolveTransfer({
     }
 
     // Log the serialized json.
-    near.log(JSON.stringify(nftTransferLog));
+    near.log(`EVENT_JSON:${JSON.stringify(nftTransferLog)}`);
 
     //return false
     return false
