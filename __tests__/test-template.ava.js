@@ -9,10 +9,7 @@ test.beforeEach(async t => {
     const root = worker.rootAccount;
 
     // Deploy the counter contract.
-    const counter = await root.createAndDeploy(
-        root.getSubAccount('counter').accountId,
-        './build/contract.wasm'
-    );
+    const counter = await root.devDeploy('./build/contract.wasm');
 
     // Init the contract
     await counter.call(counter, 'init', {});
