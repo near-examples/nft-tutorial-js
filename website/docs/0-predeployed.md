@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
 To complete this tutorial successfully, you'll need:
 
 - [A NEAR Wallet](https://testnet.mynearwallet.com/create)
-- [NEAR-CLI](/tools/near-cli#installation)
+- [NEAR-CLI](https://docs.near.org/tools/near-cli#installation)
 
 ## Using the NFT contract
 
@@ -60,7 +60,7 @@ echo $NEARID
 
 ### Minting your NFTs
 
-NEAR has deployed an NFT contract to the account `nft.examples.testnet` which allows users to freely mint tokens. Using this pre-deployed contract, let's mint our first token! 
+NEAR has deployed an NFT contract to the account `nft.examples.testnet` which allows users to freely mint tokens. Using this pre-deployed contract, let's mint our first token!
 
 
 - Run this command in your terminal, however you **must replace the `token_id` value with an UNIQUE string**.
@@ -139,7 +139,7 @@ near view nft.examples.testnet nft_tokens_for_owner '{"account_id": "'$NEARID'"}
 
 ***Congratulations! You just minted your first NFT token on the NEAR blockchain!*** 🎉
 
-👉 Now try going to your [NEAR Wallet](https://testnet.mynearwallet.com) and view your NFT in the "Collectibles" tab. 👈 
+👉 Now try going to your [NEAR Wallet](https://testnet.mynearwallet.com) and view your NFT in the "Collectibles" tab. 👈
 
 ---
 
@@ -147,7 +147,7 @@ near view nft.examples.testnet nft_tokens_for_owner '{"account_id": "'$NEARID'"}
 
 This basic example illustrates all the required steps to call an NFT smart contract on NEAR and start minting your own non-fungible tokens.
 
-Now that you're familiar with the process, you can jump to [Contract Architecture](/tutorials/nfts/js/skeleton) and learn more about the smart contract structure and how you can build your own NFT contract from the ground up.
+Now that you're familiar with the process, you can jump to [Contract Architecture](1-skeleton.md) and learn more about the smart contract structure and how you can build your own NFT contract from the ground up.
 
 ***Happy minting!*** 🪙
 

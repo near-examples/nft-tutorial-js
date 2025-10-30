@@ -6,7 +6,7 @@ description: "Learn how to upgrade your NEAR NFT contract so minted NFTs can be 
 ---
 import {Github} from "@site/src/components/UI/Codetabs"
 
-In this tutorial, you'll build off the work you previously did to implement the [minting functionality](/tutorials/nfts/js/minting) on a skeleton smart contract. You got to the point where NFTs could be minted, however, the wallet had no way of displaying the tokens since your contract didn't implement the method that the wallet was trying to call.
+In this tutorial, you'll build off the work you previously did to implement the [minting functionality](2-minting.md) on a skeleton smart contract. You got to the point where NFTs could be minted, however, the wallet had no way of displaying the tokens since your contract didn't implement the method that the wallet was trying to call.
 
 
 
@@ -21,7 +21,7 @@ Upgrading contracts, when done right, can be an immensely powerful tool. If done
 
 The NEAR Runtime will read the serialized state from disk and it will attempt to load it using the current contract code. When your code changes, it might not be able to figure out how to do this.
 
-You need to strategically upgrade your contracts and make sure that the runtime will be able to read your current state with the new contract code. For more information about upgrading contracts and some best practices, see the NEAR SDK's [upgrading contracts](../../../smart-contracts/release/upgrade.md) write-up.
+You need to strategically upgrade your contracts and make sure that the runtime will be able to read your current state with the new contract code. For more information about upgrading contracts and some best practices, see the NEAR SDK's [upgrading contracts](https://docs.near.org/smart-contracts/release/upgrade.md) write-up.
 
 ## Modifications to our contract {#modifications-to-contract}
 
@@ -98,7 +98,7 @@ Now that your contract implements the necessary functions that the wallet uses t
 
 In this tutorial, you learned about the basics of [upgrading contracts](#upgrading-contracts). Then, you implemented the necessary [modifications to your smart contract](#modifications-to-contract) and [redeployed it](#redeploying-contract). Finally you navigated to the wallet collectibles tab and [viewed your NFTs](#viewing-nfts-in-wallet).
 
-In the [next tutorial](/tutorials/nfts/js/enumeration), you'll implement the remaining functions needed to complete the [enumeration](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration) standard.
+In the [next tutorial](3-enumeration.md), you'll implement the remaining functions needed to complete the [enumeration](https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration) standard.
 
 :::note Versioning for this article
 

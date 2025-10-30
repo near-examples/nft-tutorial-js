@@ -14,7 +14,7 @@ In this tutorial, you'll learn about the [events standard](https://github.com/ne
 
 ## Introduction
 
-To get started, either switch to the `6.royalty` branch from our [GitHub repository](https://github.com/near-examples/nft-tutorial/), or continue your work from the previous tutorials.
+To get started, either switch to the `6.royalty` branch from our [GitHub repository](https://github.com/near-examples/nft-tutorial-js/), or continue your work from the previous tutorials.
 
 ```bash
 git checkout 6.royalty
@@ -26,13 +26,13 @@ If you wish to see the finished code for this _Events_ tutorial, you can find it
 
 ## Understanding the use case {#understanding-the-use-case}
 
-Have you ever wondered how the wallet knows which NFTs you own and how it can display them in the [collectibles tab](https://testnet.mynearwallet.com//?tab=collectibles)? Originally, an indexer used to listen for any functions calls starting with `nft_` on your account. These contracts were then flagged on your account as likely NFT contracts. 
+Have you ever wondered how the wallet knows which NFTs you own and how it can display them in the [collectibles tab](https://testnet.mynearwallet.com//?tab=collectibles)? Originally, an indexer used to listen for any functions calls starting with `nft_` on your account. These contracts were then flagged on your account as likely NFT contracts.
 
-When you navigated to your collectibles tab, the wallet would then query all those contracts for the list of NFTs you owned using the `nft_tokens_for_owner` function you saw in the [enumeration tutorial](/tutorials/nfts/js/enumeration).
+When you navigated to your collectibles tab, the wallet would then query all those contracts for the list of NFTs you owned using the `nft_tokens_for_owner` function you saw in the [enumeration tutorial](3-enumeration.md).
 
 ### The problem {#the-problem}
 
-This method of flagging contracts was not reliable as each NFT-driven application might have its own way of minting or transferring NFTs. In addition, it's common for apps to transfer or mint many tokens at a time using batch functions. 
+This method of flagging contracts was not reliable as each NFT-driven application might have its own way of minting or transferring NFTs. In addition, it's common for apps to transfer or mint many tokens at a time using batch functions.
 
 ### The solution {#the-solution}
 
@@ -40,7 +40,7 @@ A standard was introduced so that smart contracts could emit an event anytime NF
 
 As per the standard, you need to implement a logging functionality that gets fired when NFTs are transferred or minted. In this case, the contract doesn't support burning so you don't need to worry about that for now.
 
-It's important to note the standard dictates that the log should begin with `"EVENT_JSON:"`. The structure of your log should, however, always contain the 3 following things: 
+It's important to note the standard dictates that the log should begin with `"EVENT_JSON:"`. The structure of your log should, however, always contain the 3 following things:
 
 - **standard**: the current name of the standard (e.g. nep171)
 - **version**: the version of the standard you're using (e.g. 1.0.0)
@@ -182,7 +182,7 @@ near.log(`EVENT_JSON:${JSON.stringify(nftTransferLog)}`);
 
 This solution, unfortunately, has an edge case which will break things. If an NFT is transferred via the `nft_transfer_call` function, there's a chance that the transfer will be reverted if the `nft_on_transfer` function returns `true`. Taking a look at the logic for `nft_transfer_call`, you can see why this is a problem.
 
-When `nft_transfer_call` is invoked, it will: 
+When `nft_transfer_call` is invoked, it will:
 - Call `internalTransfer` to perform the actual transfer logic.
 - Initiate a cross-contract call and invoke the `nft_on_transfer` function.
 - Resolve the promise and perform logic in `internalResolveTransfer`.

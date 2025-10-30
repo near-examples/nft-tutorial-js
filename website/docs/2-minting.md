@@ -8,14 +8,14 @@ import {Github} from "@site/src/components/UI/Codetabs";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This is the first of many tutorials in a series where you'll be creating a complete NFT smart contract from scratch that conforms with all the NEAR [NFT standards](https://github.com/near/NEPs/tree/master/neps/nep-0171.md). Today you'll learn how to create the logic needed to mint NFTs and have them show up in your NEAR wallet. You will be modifying a bare-bones [skeleton smart contract](/tutorials/nfts/js/skeleton) by filling in the necessary code snippets needed to add minting functionalities.
+This is the first of many tutorials in a series where you'll be creating a complete NFT smart contract from scratch that conforms with all the NEAR [NFT standards](https://github.com/near/NEPs/tree/master/neps/nep-0171.md). Today you'll learn how to create the logic needed to mint NFTs and have them show up in your NEAR wallet. You will be modifying a bare-bones [skeleton smart contract](1-skeleton.md) by filling in the necessary code snippets needed to add minting functionalities.
 
 
 
 
 ## Introduction
 
-To get started, switch to the `1.skeleton` branch in our repo. If you haven't cloned the repository, refer to the [Contract Architecture](/tutorials/nfts/js/skeleton) to get started.
+To get started, switch to the `1.skeleton` branch in our repo. If you haven't cloned the repository, refer to the [Contract Architecture](1-skeleton.md) to get started.
 
 ```
 git checkout 1.skeleton
@@ -48,7 +48,7 @@ The first thing to do is add the information to the contract class.
 This allows you to get the information stored in these data structures from anywhere in the contract. The code above has created 3 token specific storages:
 
 - **tokensPerOwner**: allows you to keep track of the tokens owned by any account. It will map the account address to a set of token ID strings owned by that account.
-- **tokensById**: returns all the information about a specific token. It will map a token ID string to a `Token` object. 
+- **tokensById**: returns all the information about a specific token. It will map a token ID string to a `Token` object.
 - **tokenMetadataById**: returns just the metadata for a specific token. It wil map a token ID string to a `TokenMetadata` object.
 
 In addition, you'll keep track of the owner of the contract as well as the metadata for the contract.
@@ -182,7 +182,7 @@ We've included a very simple way to build the smart contracts throughout this tu
 yarn build:nft
 ```
 
-For deployment, you will need a NEAR account with the keys stored on your local machine. Navigate to the [NEAR wallet](https://testnet.mynearwallet.com//) site and create an account.
+For deployment, you will need a NEAR account with the keys stored on your local machine. Navigate to the [NEAR wallet](https://testnet.mynearwallet.com/) site and create an account.
 
 :::info
 Please ensure that you deploy the contract to an account with no pre-existing contracts. It's easiest to simply create a new account or create a sub-account for this tutorial.
@@ -373,7 +373,7 @@ After the contract was written, it was time to deploy to the blockchain. You [de
 
 ## Next Steps
 
-In the [next tutorial](/tutorials/nfts/js/upgrade-contract), you'll find out how to deploy a patch fix and what that means so that you can view your NFTs in the wallet.
+In the [next tutorial](2-upgrade.md), you'll find out how to deploy a patch fix and what that means so that you can view your NFTs in the wallet.
 
 :::note Versioning for this article
 

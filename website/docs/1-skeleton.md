@@ -73,7 +73,7 @@ This file contains the internal logic that complies with the standard's [approva
 
 <Github language="js" start="9" end="69" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/approval.ts" />
 
-You'll learn more about these functions in the [approvals section](/tutorials/nfts/js/approvals) of the Zero to Hero series.
+You'll learn more about these functions in the [approvals section](5-approval.md) of the Zero to Hero series.
 
 ---
 
@@ -90,7 +90,7 @@ You'll learn more about these functions in the [approvals section](/tutorials/nf
 
 <Github language="js" start="8" end="62" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/enumeration.ts" />
 
-You'll learn more about these functions in the [enumeration section](/tutorials/nfts/js/enumeration) of the tutorial series.
+You'll learn more about these functions in the [enumeration section](3-enumeration.md) of the tutorial series.
 
 ---
 
@@ -108,7 +108,7 @@ You'll learn more about these functions in the [enumeration section](/tutorials/
 
 <Github language="js" start="12" end="46" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/metadata.ts" />
 
-You'll learn more about these functions in the [minting section](/tutorials/nfts/js/minting) of the tutorial series.
+You'll learn more about these functions in the [minting section](2-minting.md) of the tutorial series.
 
 ---
 
@@ -137,7 +137,7 @@ You'll learn more about these functions in the [minting section](/tutorials/nfts
 
 <Github language="js" start="10" end="85" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/nft_core.ts" />
 
-You'll learn more about these functions in the [minting section](/tutorials/nfts/js/minting) of the tutorial series.
+You'll learn more about these functions in the [minting section](2-minting.md) of the tutorial series.
 
 ---
 
@@ -152,7 +152,7 @@ You'll learn more about these functions in the [minting section](/tutorials/nfts
 
 <Github language="js" start="7" end="45" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/royalty.ts" />
 
-You'll learn more about these functions in the [royalty section](/tutorials/nfts/js/royalty) of the tutorial series.
+You'll learn more about these functions in the [royalty section](6-royalty.md) of the tutorial series.
 
 ---
 
@@ -184,7 +184,7 @@ You'll learn more about these functions in the [royalty section](/tutorials/nfts
 
 <Github language="js" start="16" end="157" url="https://github.com/near-examples/nft-tutorial-js/blob/1.skeleton/src/nft-contract/index.ts" />
 
-You'll learn more about these functions in the [minting section](/tutorials/nfts/js/minting) of the tutorial series.
+You'll learn more about these functions in the [minting section](2-minting.md) of the tutorial series.
 
 ---
 
@@ -196,7 +196,7 @@ You'll learn more about these functions in the [minting section](/tutorials/nfts
 git clone https://github.com/near-examples/nft-tutorial-js/
 ```
 
-- Next, switch to the `1.skeleton` branch. 
+- Next, switch to the `1.skeleton` branch.
 - Install the dependencies (including the JS SDK): `yarn`
 - Build the contract with `yarn build`:
 
@@ -216,7 +216,7 @@ Building the skeleton is useful to validate that everything works properly and t
 ## Conclusion
 
 You've seen the layout of this NFT smart contract, and how all the functions are laid out across the different source files.
-Using `yarn`, you've been able to compile the contract, and you'll start fleshing out this skeleton in the next [Minting tutorial](/tutorials/nfts/js/minting).
+Using `yarn`, you've been able to compile the contract, and you'll start fleshing out this skeleton in the next [Minting tutorial](2-minting.md).
 
 :::note Versioning for this article
 At the time of this writing, this example works with the following versions:

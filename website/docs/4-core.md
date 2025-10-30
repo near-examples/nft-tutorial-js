@@ -9,7 +9,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 In this tutorial you'll learn how to implement the [core standards](https://github.com/near/NEPs/tree/master/neps/nep-0171.md) into your smart contract.
-If you're joining us for the first time, feel free to clone [this repo](https://github.com/near-examples/nft-tutorial) and checkout the `3.enumeration` branch to follow along.
+If you're joining us for the first time, feel free to clone [this repo](https://github.com/near-examples/nft-tutorial-js) and checkout the `3.enumeration` branch to follow along.
 
 
 ```bash
@@ -24,7 +24,7 @@ If you wish to see the finished code for this _Core_ tutorial, you can find it o
 
 Up until this point, you've created a simple NFT smart contract that allows users to mint tokens and view information using the [enumeration standards](https://github.com/near/NEPs/tree/master/neps/nep-0181.md). Today, you'll expand your smart contract to allow for users to not only mint tokens, but transfer them as well.
 
-As we did in the [minting tutorial](/tutorials/nfts/js/minting), let's break down the problem into multiple subtasks to make our lives easier. When a token is minted, information is stored in 3 places:
+As we did in the [minting tutorial](2-minting.md), let's break down the problem into multiple subtasks to make our lives easier. When a token is minted, information is stored in 3 places:
 
 - **tokensPerOwner**: set of tokens for each account.
 - **tokensById**: maps a token ID to a `Token` object.
@@ -99,7 +99,7 @@ With these internal functions complete, the logic for transferring NFTs is finis
 
 ### Transfer call function {#transfer-call-function}
 
-Let's consider the following scenario. An account wants to transfer an NFT to a smart contract for performing a service. The traditional approach would be to use an approval management system, where the receiving contract is granted the ability to transfer the NFT to themselves after completion. You'll learn more about the approval management system in the [approvals section](/tutorials/nfts/js/approvals) of the tutorial series.
+Let's consider the following scenario. An account wants to transfer an NFT to a smart contract for performing a service. The traditional approach would be to use an approval management system, where the receiving contract is granted the ability to transfer the NFT to themselves after completion. You'll learn more about the approval management system in the [approvals section](5-approval.md) of the tutorial series.
 
 This allowance workflow takes multiple transactions. If we introduce a “transfer and call” workflow baked into a single transaction, the process can be greatly improved.
 
@@ -149,7 +149,7 @@ Let's test this out by transferring an NFT to the account `benjiman.testnet` and
 This means that the NFT won't be recoverable unless the account `benjiman.testnet` transfers it back to you. If you don't want your NFT lost, make a new account and transfer the token to that account instead.
 :::
 
-If you run the following command, it will transfer the token `"token-1"` to the account `benjiman.testnet` with the memo `"Go Team :)"`. Take note that you're also attaching exactly 1 yoctoNEAR by using the `--depositYocto` flag. 
+If you run the following command, it will transfer the token `"token-1"` to the account `benjiman.testnet` with the memo `"Go Team :)"`. Take note that you're also attaching exactly 1 yoctoNEAR by using the `--depositYocto` flag.
 
 :::tip
 If you used a different token ID in the previous tutorials, replace `token-1` with your token ID.
@@ -219,7 +219,7 @@ If you query for your tokens, you should still have `token-2` and at this point,
 
 In this tutorial, you learned how to expand an NFT contract past the minting functionality and you added ways for users to transfer NFTs. You [broke down](#introduction) the problem into smaller, more digestible subtasks and took that information and implemented both the [NFT transfer](#transfer-function) and [NFT transfer call](#transfer-call-function) functions. In addition, you deployed another [patch fix](#redeploying-contract) to your smart contract and [tested](#testing-changes) the transfer functionality.
 
-In the [next tutorial](/tutorials/nfts/js/approvals), you'll learn about the approval management system and how you can approve others to transfer tokens on your behalf.
+In the [next tutorial](5-approval.md), you'll learn about the approval management system and how you can approve others to transfer tokens on your behalf.
 
 :::note Versioning for this article
 

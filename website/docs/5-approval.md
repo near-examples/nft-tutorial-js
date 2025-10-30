@@ -8,7 +8,7 @@ import {Github} from "@site/src/components/UI/Codetabs";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-In this tutorial you'll learn the basics of an approval management system which will allow you to grant others access to transfer NFTs on your behalf. This is the backbone of all NFT marketplaces and allows for some complex yet beautiful scenarios to happen. If you're joining us for the first time, feel free to clone [this repository](https://github.com/near-examples/nft-tutorial) and checkout the `4.core` branch to follow along.
+In this tutorial you'll learn the basics of an approval management system which will allow you to grant others access to transfer NFTs on your behalf. This is the backbone of all NFT marketplaces and allows for some complex yet beautiful scenarios to happen. If you're joining us for the first time, feel free to clone [this repository](https://github.com/near-examples/nft-tutorial-js) and checkout the `4.core` branch to follow along.
 
 
 
@@ -136,7 +136,7 @@ Now that you've added the support for approved account IDs and the next approval
 
 <Github language="js" start="9" end="73" url="https://github.com/near-examples/nft-tutorial-js/blob/5.approval/src/nft-contract/approval.ts" />
 
-The function will first assert that the user has attached **at least** one yoctoNEAR (which we'll implement soon). This is both for security and to cover storage. When someone approves an account ID, they're storing that information on the contract. As you saw in the [minting tutorial](/tutorials/nfts/js/minting), you can either have the smart contract account cover the storage, or you can have the users cover that cost. The latter is more scalable and it's the approach you'll be working with throughout this tutorial.
+The function will first assert that the user has attached **at least** one yoctoNEAR (which we'll implement soon). This is both for security and to cover storage. When someone approves an account ID, they're storing that information on the contract. As you saw in the [minting tutorial](2-minting.md), you can either have the smart contract account cover the storage, or you can have the users cover that cost. The latter is more scalable and it's the approach you'll be working with throughout this tutorial.
 
 After the assertion comes back with no problems, you get the token object and make sure that only the owner is calling this method. Only the owner should be able to allow other accounts to transfer their NFTs. You then get the next approval ID and insert the passed in account into the map with the next approval ID. If it's a new approval ID, storage must be paid. If it's not a new approval ID, no storage needs to be paid and only attaching 1 yoctoNEAR would be enough.
 
@@ -524,7 +524,7 @@ With the testing finished, you've successfully implemented the approvals extensi
 
 Today you went through a lot of logic to implement the [approvals extension](https://github.com/near/NEPs/tree/master/neps/nep-0178.md) so let's break down exactly what you did.
 
-First, you explored the [basic approach](#allow-an-account-to-transfer-your-nft) of how to solve the problem. You then went through and discovered some of the [problems](/tutorials/nfts/js/approvals#the-problem) with that solution and learned how to [fix it](#the-solution).
+First, you explored the [basic approach](#allow-an-account-to-transfer-your-nft) of how to solve the problem. You then went through and discovered some of the [problems](#the-problem) with that solution and learned how to [fix it](#the-solution).
 
 After understanding what you should do to implement the approvals extension, you started to [modify](#expanding-the-token-and-jsontoken-structs) the JsonToken and Token structs in the contract. You then implemented the logic for [approving accounts](#approving-accounts) and saw how [marketplaces](#marketplace-integrations) are integrated.
 
@@ -534,7 +534,7 @@ At this point, everything was implemented in order to allow accounts to be appro
 
 You implemented a view method to [check](#check-if-an-account-is-approved) if an account is approved and to finish the coding portion of the tutorial, you implemented the logic necessary to [revoke an account](#revoke-an-account) as well as [revoke all accounts](#revoke-all-accounts).
 
-After this, the contract code was finished and it was time to move onto testing where you created a [subaccount](#creating-sub-account) and tested the [approving](/tutorials/nfts/js/approvals#approving-an-account) and [transferring](#transferring-the-nft) for your NFTs.
+After this, the contract code was finished and it was time to move onto testing where you created a [subaccount](#creating-sub-account) and tested the [approving](#approving-an-account) and [transferring](#transferring-the-nft) for your NFTs.
 
 In the next tutorial, you'll learn about the royalty standards and how you can interact with NFT marketplaces.
 

@@ -94,7 +94,7 @@ With that out of the way, it's time to move onto the `nft_callbacks.ts` file whe
 
 ## nft_callbacks.ts {#nft_callbacks-ts}
 
-This file is responsible for the logic used to put NFTs for sale. If you remember from the [marketplaces section](/tutorials/nfts/js/approvals#marketplace-integrations) of the approvals tutorial, when users call `nft_approve` and pass in a message, it will perform a cross-contract call to the `receiver_id`'s contract and call the method `nft_on_approve`. This `nft_callbacks.ts` file will implement that function.
+This file is responsible for the logic used to put NFTs for sale. If you remember from the [marketplaces section](5-approval.md#marketplace-integrations) of the approvals tutorial, when users call `nft_approve` and pass in a message, it will perform a cross-contract call to the `receiver_id`'s contract and call the method `nft_on_approve`. This `nft_callbacks.ts` file will implement that function.
 
 ### Listing logic {#listing-logic}
 
